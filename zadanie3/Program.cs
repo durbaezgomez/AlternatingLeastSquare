@@ -5,7 +5,7 @@
         static void Main(string[] args)
         {
             DataProvider parser = new DataProvider();
-            parser.ParseInitialData(10);
+            var products = parser.ParseInitialData(10);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace zadanie3
         }
 
         // Parsing data from amazon-meta.txt into an array of Product
-        public void ParseInitialData(int amountToFind)
+        public Product[] ParseInitialData(int amountToFind)
         {
             List<List<string>> results = ReadFromFile(amountToFind);
             results = FilterForUnique(results);
@@ -33,6 +33,8 @@ namespace zadanie3
             //{
             //    Console.Write(prod);
             //}
+
+            return productsFound.ToArray();
             
         }
 
