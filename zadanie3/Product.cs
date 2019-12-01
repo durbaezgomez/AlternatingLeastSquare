@@ -1,15 +1,27 @@
-﻿using System;
+﻿using System.Collections.Generic;
+
 namespace zadanie3
 {
     public class Product
     {
-        private int Asin { get; }
-        private int[] Ratings { get; }
+        private string Asin { get; }
+        private Dictionary<string, int> Reviews { get; }
 
-        public Product(int asin, int[] ratings)
+        public Product(string asin, Dictionary<string, int> reviews)
         {
-            this.Asin = asin;
-            this.Ratings = ratings;
+            Asin = asin;
+            Reviews = reviews;
+        }
+
+        public override string ToString()
+        {
+            string s = "\nProduct ASIN: " + Asin + "\nReviews: " + Reviews.Count + "\n";
+            foreach (KeyValuePair<string, int> entry in Reviews)
+            {
+                s += "customer: " + entry.Key + " | ";
+                s += "rating: " + entry.Value + "\n";
+            }
+            return s;
         }
     }
 }

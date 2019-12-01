@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace zadanie3
 {
@@ -17,19 +18,22 @@ namespace zadanie3
         // Parsing data from amazon-meta.txt into an array of Product
         public void ParseInitialData(int amountToFind)
         {
-            // TODO: parse data from file by ASIN, then access ratings
-
             List<List<string>> results = ReadFromFile(amountToFind);
             results = FilterForUnique(results);
-            PrintResults(results);
-        }
 
-        private static void PrintResults(List<List<string>> results)
-        {
-            foreach (List<string> list in results)
+            foreach (List<string> result in results)
             {
-                Console.WriteLine(list[0]);
+                string asin = ProcessASIN(result);
+                Dictionary<string, int> reviews = ProcessReviews(result);
+                Product prod = new Product(asin, reviews);
+                productsFound.Add(prod);
             }
+
+            //foreach (Product prod in productsFound)
+            //{
+            //    Console.Write(prod);
+            //}
+            
         }
 
         private List<List<string>> ReadFromFile(int amountToFind)
@@ -56,8 +60,7 @@ namespace zadanie3
                     if (current != null)
                         current.Add(line);
                 }
-                // now results should contain amountToFind * products in string format
-                Console.WriteLine("FOUND: " + results.Count);
+                //Console.WriteLine("FOUND: " + results.Count);
             }
 
             catch (Exception e)
@@ -86,12 +89,43 @@ namespace zadanie3
                 .ToList();
         }
 
-        private int[] ParseReviews()
+        private string ProcessASIN(List<string> data)
         {
-            var reviews = new List<int>();
+            return data.First().Substring(6);
+        }
 
-            int[] reviewsArray = reviews.ToArray();
-            return reviewsArray;
+        private Dictionary<string, int> ProcessReviews(List<string> data)
+        {
+            Dictionary<string, int> reviews = new Dictionary<string, int>();
+
+            var startIndex = data.FindIndex(x => x.Contains("reviews"));
+            data.RemoveRange(0, startIndex);
+
+            string customerId;
+            int rating;
+            foreach(string line in data)
+            {
+                Match match = Regex.Match(line, @" A[A-Z0-9]+");
+                if (match.Success)
+                {
+                    customerId = match.Value.Substring(1);
+                    Match match2 = Regex.Match(line, @"rating: [0-9]");
+                    if (match2.Success)
+                    {
+                        rating = Int32.Parse(match2.Value.Substring(8));
+                        try
+                        {
+                            reviews.Add(customerId, rating);
+                        }
+                        catch (Exception) // Key already in dictionary (user has previously reviewed the product)
+                        {
+                            reviews.Remove(customerId);
+                            reviews.Add(customerId, rating);
+                        }
+                    }
+                }
+            }
+            return reviews;
         }
     }
 }

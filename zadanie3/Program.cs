@@ -1,13 +1,11 @@
-﻿using System;
-
-namespace zadanie3
+﻿namespace zadanie3
 {
     class Program
     {
         static void Main(string[] args)
         {
             DataProvider parser = new DataProvider();
-            parser.ParseInitialData(2);
+            parser.ParseInitialData(10);
         }
     }
 }
