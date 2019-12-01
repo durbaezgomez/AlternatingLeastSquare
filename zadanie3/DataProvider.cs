@@ -1,19 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace zadanie3
 {
     public class DataProvider
     {
-        // Parsing data from amazon-meta.txt into an array of Product
-        public static Product[] ParseInitialData(int amountToFind) 
-        {
-            // TODO: parse data from file by id, then access ratings
+        private List<Product> productsFound { get; set; }
 
-            var productsFound = new List<Product>();
-           
+        public DataProvider()
+        {
+            productsFound = new List<Product>();
+        }
+
+        // Parsing data from amazon-meta.txt into an array of Product
+        public void ParseInitialData(int amountToFind)
+        {
+            // TODO: parse data from file by ASIN, then access ratings
+
+            List<List<string>> results = ReadFromFile(amountToFind);
+            results = FilterForUnique(results);
+            PrintResults(results);
+        }
+
+        private static void PrintResults(List<List<string>> results)
+        {
+            foreach (List<string> list in results)
+            {
+                Console.WriteLine(list[0]);
+            }
+        }
+
+        private List<List<string>> ReadFromFile(int amountToFind)
+        {
             List<List<string>> results = new List<List<string>>();
             List<string> current = null;
             string line;
@@ -23,15 +43,14 @@ namespace zadanie3
                 string pathToFile = "/Users/admin/Desktop/STUDIA/UG/SEM5/ALG/zadanie3/amazon-meta.txt";
                 StreamReader file = File.OpenText(pathToFile);
 
-                while ((line = file.ReadLine()) != null && productsFound.Count != amountToFind)
+                while ((line = file.ReadLine()) != null && results.Count != amountToFind)
                 {
-
                     if (line.Contains("ASIN:") && current == null)
                         current = new List<string>();
-                    else if ((line.Contains("") || line.Length == 1) && current != null)
+                    else if (line.Length == 0 && current != null)
                     {
-                        //if (CheckCategory(current))
-                        //    results.Add(current);
+                        if (CheckViability(current))
+                            results.Add(current);
                         current = null;
                     }
                     if (current != null)
@@ -41,21 +60,33 @@ namespace zadanie3
                 Console.WriteLine("FOUND: " + results.Count);
             }
 
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
 
-            Product[] finalProductsArray = productsFound.ToArray();
-            return finalProductsArray;
+            return results;
         }
 
-        private static bool CheckCategory(List<string> product)
-        {
+        private bool CheckViability(List<string> product)
+        { 
+            if (product.Contains("  group: Book"))
+            {
+                int reviewCount = product.Count - product.FindIndex(x => x.Contains("reviews")) - 1;
+                return reviewCount >= 6;
+            }
             return false;
         }
 
-        private static int[] ParseReviews()
+        private List<List<string>> FilterForUnique(List<List<string>> list)
+        {
+            return list
+                .GroupBy(x => x.First())
+                .Select(x => x.Last())
+                .ToList();
+        }
+
+        private int[] ParseReviews()
         {
             var reviews = new List<int>();
 

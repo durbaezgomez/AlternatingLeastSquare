@@ -6,7 +6,8 @@ namespace zadanie3
     {
         static void Main(string[] args)
         {
-            Product[] products = DataProvider.ParseInitialData(3);
+            DataProvider parser = new DataProvider();
+            parser.ParseInitialData(2);
         }
     }
 }
