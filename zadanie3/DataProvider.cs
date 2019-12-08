@@ -8,11 +8,9 @@ namespace zadanie3
 {
     public class DataProvider
     {
-        public List<Product> ProductsFound = new List<Product>();
         public List<Result> ResultsList = new List<Result>();
-        
-            private readonly Dictionary<string, int> customerIds = new Dictionary<string, int>();
-        private int nextInt = 0;
+        private readonly Dictionary<string, int> _customerIds = new Dictionary<string, int>();
+        private int _nextInt = 0;
 
         public DataProvider(int amountToFind)
         {
@@ -21,6 +19,7 @@ namespace zadanie3
 
         public List<Result> ParseInitialData(int amountToFind)
         {
+            var productsFound = new List<Product>();
             List<List<string>> results = ReadFromFile(amountToFind);
             results = FilterForUnique(results);
             int id = 0;
@@ -28,11 +27,11 @@ namespace zadanie3
             {
                 Dictionary<int, int> reviews = ProcessReviews(result);
                 Product prod = new Product(id, reviews);
-                ProductsFound.Add(prod);
+                productsFound.Add(prod);
                 id += 1;
             }
 
-            foreach (var product in ProductsFound)
+            foreach (var product in productsFound)
             {
                 foreach (var customerIndex in product.Reviews.Keys)
                 {
@@ -47,7 +46,7 @@ namespace zadanie3
             //}
 
             return ResultsList;
-            
+
         }
 
         private List<List<string>> ReadFromFile(int amountToFind)
@@ -86,7 +85,7 @@ namespace zadanie3
         }
 
         private bool CheckViability(List<string> product)
-        { 
+        {
             if (product.Contains("  group: Book"))
             {
                 int reviewCount = product.Count - product.FindIndex(x => x.Contains("reviews")) - 1;
@@ -112,7 +111,7 @@ namespace zadanie3
 
             string customerId;
             int rating;
-            foreach(string line in data)
+            foreach (string line in data)
             {
                 Match match = Regex.Match(line, @" A[A-Z0-9]+");
                 if (match.Success)
@@ -137,15 +136,15 @@ namespace zadanie3
             Dictionary<int, int> reviewsConverted = new Dictionary<int, int>();
             foreach (var customer in reviews.Keys)
             {
-                if (customerIds.Keys.Contains(customer))
+                if (_customerIds.Keys.Contains(customer))
                 {
-                    reviewsConverted.Add(customerIds[customer], reviews[customer]);
+                    reviewsConverted.Add(_customerIds[customer], reviews[customer]);
                 }
                 else
                 {
-                    customerIds.Add(customer, nextInt);
-                    reviewsConverted.Add(nextInt, reviews[customer]);
-                    nextInt += 1;
+                    _customerIds.Add(customer, _nextInt);
+                    reviewsConverted.Add(_nextInt, reviews[customer]);
+                    _nextInt += 1;
                 }
             }
             return reviewsConverted;
