@@ -21,6 +21,7 @@ namespace zadanie3
                 s += "customer: " + entry.Key + " | ";
                 s += "rating: " + entry.Value + "\n";
             }
+
             return s;
         }
     }

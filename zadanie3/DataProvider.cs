@@ -40,13 +40,7 @@ namespace zadanie3
                 }
             }
 
-            //foreach (Product prod in ProductsFound)
-            //{
-            //    Console.Write(prod);
-            //}
-
             return ResultsList;
-
         }
 
         private List<List<string>> ReadFromFile(int amountToFind)
@@ -73,7 +67,6 @@ namespace zadanie3
                     if (current != null)
                         current.Add(line);
                 }
-                //Console.WriteLine("FOUND: " + results.Count);
             }
 
             catch (Exception e)
@@ -91,6 +84,7 @@ namespace zadanie3
                 int reviewCount = product.Count - product.FindIndex(x => x.Contains("reviews")) - 1;
                 return reviewCount >= 6;
             }
+
             return false;
         }
 
@@ -125,6 +119,7 @@ namespace zadanie3
                         {
                             reviews.Add(customerId, rating);
                         }
+
                         catch (Exception) // Key already in dictionary (user has previously reviewed the product)
                         {
                             reviews.Remove(customerId);
@@ -133,7 +128,9 @@ namespace zadanie3
                     }
                 }
             }
+
             Dictionary<int, int> reviewsConverted = new Dictionary<int, int>();
+
             foreach (var customer in reviews.Keys)
             {
                 if (_customerIds.Keys.Contains(customer))
@@ -147,6 +144,7 @@ namespace zadanie3
                     _nextInt += 1;
                 }
             }
+
             return reviewsConverted;
         }
     }
