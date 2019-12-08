@@ -12,7 +12,7 @@ namespace zadanie3
         public MatrixProvider()
         {
             RatingsMatrix = ProvideRatingsTable(dataProvider.ResultsList);
-            PrintRatingsMatrix();
+            //PrintRatingsMatrix();
         }
 
         private void PrintRatingsMatrix()
@@ -49,6 +49,21 @@ namespace zadanie3
             }
 
             return ratingsMatrix;
+        }
+
+        private float[,] FillArrayWithRandomNumbers(int d, int xDimension)
+        {
+            float[,] array = new float[d, xDimension];
+            Random rnd = new Random();
+            for (int i = 0; i < d; i++)
+            {
+                for (int j = 0; j < xDimension; j++)
+                {
+                    array[i, j] = (float)rnd.NextDouble();
+                }
+            }
+
+            return array;
         }
 
     }
