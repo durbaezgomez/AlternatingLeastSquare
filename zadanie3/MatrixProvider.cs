@@ -14,20 +14,10 @@ namespace zadanie3
         public MatrixProvider()
         {
             RatingsMatrix = ProvideRatingsTable(dataProvider.ResultsList);
-            //PrintRatingsMatrix();
-        }
-
-        private void PrintRatingsMatrix()
-        {
-            for (int i = 0; i < RatingsMatrix.GetLength(0); i++)
-            {
-                for (int j = 0; j < RatingsMatrix.GetLength(1); j++)
-                {
-                    Console.Write(RatingsMatrix[i, j] + "   ");
-                }
-
-                Console.WriteLine();
-            }
+            MatrixP = PopulateMatrix(3, 10);
+            MatrixU = PopulateMatrix(3, 3);
+            Utility<float>.PrintMatrix(MatrixP);
+            Utility<float>.PrintMatrix(MatrixU);
         }
 
         private int[,] ProvideRatingsTable(List<Result> pivotTable)
@@ -53,7 +43,7 @@ namespace zadanie3
             return ratingsMatrix;
         }
 
-        private float[,] FillArrayWithRandomNumbers(int d, int xDimension)
+        private float[,] PopulateMatrix(int d, int xDimension)
         {
             float[,] array = new float[d, xDimension];
             Random rnd = new Random();
