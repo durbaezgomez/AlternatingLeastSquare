@@ -4,8 +4,8 @@
     {
         static void Main(string[] args)
         {
-            DataProvider parser = new DataProvider();
-            var products = parser.ParseInitialData(10);
+            var processRunner = new ProcessRunner();
+            //var dataProvider = new DataProvider(70);
         }
     }
 }

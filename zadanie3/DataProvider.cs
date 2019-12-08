@@ -8,33 +8,35 @@ namespace zadanie3
 {
     public class DataProvider
     {
-        private List<Product> productsFound { get; set; }
+        public List<Product> ProductsFound = new List<Product>();
+        private readonly Dictionary<string, int> customerIds = new Dictionary<string, int>();
+        private int nextInt = 0;
 
-        public DataProvider()
+        public DataProvider(int amountToFind)
         {
-            productsFound = new List<Product>();
+            ProductsFound = ParseInitialData(amountToFind);
         }
 
         // Parsing data from amazon-meta.txt into an array of Product
-        public Product[] ParseInitialData(int amountToFind)
+        public List<Product> ParseInitialData(int amountToFind)
         {
             List<List<string>> results = ReadFromFile(amountToFind);
             results = FilterForUnique(results);
-
+            int id = 0;
             foreach (List<string> result in results)
             {
-                string asin = ProcessASIN(result);
-                Dictionary<string, int> reviews = ProcessReviews(result);
-                Product prod = new Product(asin, reviews);
-                productsFound.Add(prod);
+                Dictionary<int, int> reviews = ProcessReviews(result);
+                Product prod = new Product(id, reviews);
+                ProductsFound.Add(prod);
+                id += 1;
             }
 
-            //foreach (Product prod in productsFound)
+            //foreach (Product prod in ProductsFound)
             //{
             //    Console.Write(prod);
             //}
 
-            return productsFound.ToArray();
+            return ProductsFound;
             
         }
 
@@ -91,12 +93,7 @@ namespace zadanie3
                 .ToList();
         }
 
-        private string ProcessASIN(List<string> data)
-        {
-            return data.First().Substring(6);
-        }
-
-        private Dictionary<string, int> ProcessReviews(List<string> data)
+        private Dictionary<int, int> ProcessReviews(List<string> data)
         {
             Dictionary<string, int> reviews = new Dictionary<string, int>();
 
@@ -127,7 +124,21 @@ namespace zadanie3
                     }
                 }
             }
-            return reviews;
+            Dictionary<int, int> reviewsConverted = new Dictionary<int, int>();
+            foreach (var customer in reviews.Keys)
+            {
+                if (customerIds.Keys.Contains(customer))
+                {
+                    reviewsConverted.Add(customerIds[customer], reviews[customer]);
+                }
+                else
+                {
+                    customerIds.Add(customer, nextInt);
+                    reviewsConverted.Add(nextInt, reviews[customer]);
+                    nextInt += 1;
+                }
+            }
+            return reviewsConverted;
         }
     }
 }

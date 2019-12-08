@@ -4,19 +4,19 @@ namespace zadanie3
 {
     public class Product
     {
-        private string Asin { get; }
-        private Dictionary<string, int> Reviews { get; }
+        public int Id { get; }
+        public Dictionary<int, int> Reviews { get; }
 
-        public Product(string asin, Dictionary<string, int> reviews)
+        public Product(int id, Dictionary<int, int> reviews)
         {
-            Asin = asin;
+            Id = id;
             Reviews = reviews;
         }
 
         public override string ToString()
         {
-            string s = "\nProduct ASIN: " + Asin + "\nReviews: " + Reviews.Count + "\n";
-            foreach (KeyValuePair<string, int> entry in Reviews)
+            string s = "\nProduct Id: " + Id + "\nReviews: " + Reviews.Count + "\n";
+            foreach (KeyValuePair<int, int> entry in Reviews)
             {
                 s += "customer: " + entry.Key + " | ";
                 s += "rating: " + entry.Value + "\n";
