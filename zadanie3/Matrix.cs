@@ -1,290 +1,116 @@
-﻿using System;
+﻿using MiscUtil;
+
 namespace zadanie3
 {
-    public class Matrix<T> where T : new()
+    public class Matrix<T>
     {
-        public T[,] MatrixContainer { get; }
+        public T[,] MatrixA;
+        public T[] VectorB;
+        public T[] VectorX;
+        public T[] VectorXGauss;
+        public int Dimensions;
+        public int[] Column;
 
-        public Matrix(T[,] matrix)
+        public Matrix(int dimensions)
         {
-            MatrixContainer = matrix;
-        }
-
-        public int Rows => MatrixContainer.GetLength(0);
-
-        public int Cols => MatrixContainer.GetLength(1);
-
-        public T this[int row, int col]
-        {
-            get => MatrixContainer[row, col];
-            set => MatrixContainer[row, col] = value;
-        }
-
-        public static Matrix<T> operator +(Matrix<T> a, Matrix<T> b)
-        {
-            dynamic dynamicA = (dynamic)a;
-            dynamic dynamicB = (dynamic)b;
-            if (a.Rows != b.Rows || a.Cols != b.Cols)
-                throw new ArgumentException("Matrix sizes are not equal.");
-
-            var output = new T[a.Rows, a.Cols];
-            for (var i = 0; i < a.Rows; i++)
+            Dimensions = dimensions;
+            MatrixA = new T[dimensions, dimensions];
+            VectorX = new T[dimensions];
+            VectorB = new T[dimensions];
+            VectorXGauss = new T[dimensions];
+            Column = new int[dimensions];
+            for (int i = 0; i < dimensions; i++)
             {
-                for (var j = 0; j < a.Cols; j++)
-                {
-                    output[i, j] = dynamicA[i, j] + dynamicB[i, j];
-                }
+                Column[i] = i;
             }
-
-            return new Matrix<T>(output);
         }
 
-        public static Matrix<T> operator *(Matrix<T> a, Matrix<T> b)
+        public void CalculatePG()
         {
-            dynamic dynamicA = (dynamic)a;
-            dynamic dynamicB = (dynamic)b;
-            if (a.Cols != b.Rows)
-                throw new ArgumentException("Matrix sizes are not equal.");
-
-            var output = new T[a.Rows, b.Cols];
-            for (var row = 0; row < a.Rows; row++)
+            for (int n = 1; n < Dimensions; n++)
             {
-                for (var col = 0; col < b.Cols; col++)
+                int number = n - 1;
+                T max = MatrixA[Column[n - 1], n - 1];
+                for (int i = n - 1; i < Dimensions; i++)
                 {
-                    var sum = new T();
-                    for (var k = 0; k < a.Cols; k++)
+                    T actual = Absolute(MatrixA[Column[n - 1], i]);
+                    if (Operator.GreaterThan<T>(actual, max))
                     {
-                        sum += dynamicA[row, k] * dynamicB[k, col];
-                    }
-
-                    output[row, col] = sum;
-                }
-            }
-
-            return new Matrix<T>(output);
-        }
-
-        public static T[] operator *(Matrix<T> a, T[] b)
-        {
-            dynamic dynamicA = (dynamic)a;
-            dynamic dynamicB = (dynamic)b;
-            if (a.Cols != b.Length)
-                throw new ArgumentException("Matrix sizes are not equal.");
-
-            var output = new T[a.Rows];
-            for (var row = 0; row < a.Rows; row++)
-                output[row] = new T();
-
-            for (var row = 0; row < a.Rows; row++)
-            {
-                for (var col = 0; col < b.Length; col++)
-                {
-                    output[row] += dynamicA[row, col] * dynamicB[col];
-                }
-            }
-
-            return output;
-        }
-
-        public void SwapRow(int index1, int index2)
-        {
-            for (var i = 0; i < Cols; i++)
-            {
-                var temp = this[index2, i];
-                this[index2, i] = this[index1, i];
-                this[index1, i] = temp;
-            }
-        }
-
-        public void SwapColumn(int index1, int index2)
-        {
-            for (var i = 0; i < Cols; i++)
-            {
-                var temp = this[i, index2];
-                this[i, index2] = this[i, index1];
-                this[i, index1] = temp;
-            }
-        }
-
-        public int FindMaxInColumn(int selected)
-        {
-            var currentMaxRowIndex = selected;
-            var currentMax = this[selected, selected];
-
-            for (var i = selected; i < Rows; i++)
-            {
-                if (this[i, selected] > (dynamic)currentMax)
-                {
-                    currentMax = this[i, selected];
-                    currentMaxRowIndex = i;
-                }
-            }
-
-            return currentMaxRowIndex;
-        }
-
-        public Tuple<int, int> FindMax(int selected)
-        {
-            var currentMaxIndex = new Tuple<int, int>(selected, selected);
-            var currentMax = this[selected, selected];
-
-            for (var i = selected; i < Rows; i++)
-            {
-                for (var j = selected; j < Cols; j++)
-                {
-                    if (this[i, j] > (dynamic)currentMax || this[i, j] < -(dynamic)currentMax)
-                    {
-                        currentMax = this[i, j];
-                        currentMaxIndex = new Tuple<int, int>(i, j);
+                        max = actual;
+                        number = i;
                     }
                 }
-            }
-
-            return currentMaxIndex;
-        }
-
-        public void GaussianReductionNoPivot(T[] vector)
-        {
-            ReduceLeftBottomTriangle(vector);
-            CountResultBackwards(vector);
-        }
-
-        public void GaussianReductionPartialPivot(T[] vector)
-        {
-            ReduceLeftBottomTrianglePartialPivot(vector);
-            CountResultBackwards(vector);
-        }
-
-        public void GaussianReductionFullPivot(T[] vector)
-        {
-            var columnOrder = new int[Cols];
-            for (var i = 0; i < Cols; i++)
-                columnOrder[i] = i;
-
-            ReduceLeftBottomTriangleFullPivot(vector, columnOrder);
-            CountResultBackwards(vector);
-
-            var orderedVector = new T[Cols];
-            for (var i = 0; i < Cols; i++)
-                orderedVector[columnOrder[i]] = vector[i];
-
-            for (var i = 0; i < Cols; i++)
-                vector[i] = orderedVector[i];
-        }
-
-        public void ReduceLeftBottomTriangle(T[] vector)
-        {
-            for (var selected = 0; selected < Rows - 1; selected++)
-            {
-                EnsureNoLeadingZero(selected);
-
-                for (var current = selected + 1; current < Rows; current++)
+                if (Operator.NotEqual(number, n - 1))
                 {
-                    ReduceRow(vector, selected, current);
+                    for (int l = n - 1; l < Dimensions; l++)
+                    {
+                        T tempA = MatrixA[Column[l], number];
+                        MatrixA[Column[l], number] = MatrixA[Column[l], n - 1];
+                        MatrixA[Column[l], n - 1] = tempA;
+                    }
+                    T tempB = VectorB[number];
+                    VectorB[number] = VectorB[n - 1];
+                    VectorB[n - 1] = tempB;
+                }
+                CalculateStep(n);
+            }
+            CalculateResult();
+        }
+
+        public void CalculateStep(int n)
+        {
+            for (int y = n; y < Dimensions; y++)
+            {
+                T a = Operator.Divide(MatrixA[Column[n - 1], y], MatrixA[Column[n - 1], n - 1]);
+                for (int x = n - 1; x < Dimensions; x++)
+                    MatrixA[Column[x], y] = Operator.Subtract(MatrixA[Column[x], y], Operator.Multiply(a, MatrixA[Column[x], n - 1]));
+                VectorB[y] = Operator.Subtract(VectorB[y], Operator.Multiply(a, VectorB[n - 1]));
+            }
+        }
+
+        public void CalculateResult()
+        {
+            for (int y = Dimensions - 1; y >= 0; y--)
+            {
+                VectorXGauss[Column[y]] = Operator.Divide(VectorB[y], MatrixA[Column[y], y]);
+                for (int x = Dimensions - 1; x > y; x--)
+                {
+                    MatrixA[Column[x], y] = Operator.Divide(MatrixA[Column[x], y], MatrixA[Column[y], y]);
+                    VectorXGauss[Column[y]] = Operator.Subtract(VectorXGauss[Column[y]], Operator.Multiply(MatrixA[Column[x], y], VectorXGauss[Column[x]]));
                 }
             }
+            for (int i = 0; i < Dimensions; i++)
+                VectorB[i] = VectorXGauss[i];
         }
 
-        public void ReduceLeftBottomTrianglePartialPivot(T[] vector)
+        public T Absolute(T obj)
         {
-            for (var selected = 0; selected < Rows - 1; selected++)
+            T zero = Operator.Subtract(obj, obj);
+            if (Operator.LessThan(obj, zero))
+                obj = Operator.Subtract(obj, Operator.Add(obj, obj));
+            return obj;
+        }
+
+        public T CalculateDiff()
+        {
+            T sum = Operator.Subtract(VectorX[0], VectorX[0]);
+            for (int y = 0; y < Dimensions; y++)
             {
-                EnsureNoLeadingZero(selected);
-                ChoosePartialPivot(vector, selected);
-
-                for (var current = selected + 1; current < Rows; current++)
-                {
-                    ReduceRow(vector, selected, current);
-                }
+                T diff = Absolute(Operator.Subtract(VectorX[y], VectorB[y]));
+                sum = Operator.Add(sum, diff);
             }
+            return sum;
         }
 
-        public void ChoosePartialPivot(T[] vector, int selected)
+        public void Multiplication()
         {
-            var maxRow = FindMaxInColumn(selected);
-
-            if (selected != maxRow)
-            {
-                var temp = vector[selected];
-                vector[selected] = vector[maxRow];
-                vector[maxRow] = temp;
-
-                SwapRow(selected, maxRow);
-            }
+            for (int y = 0; y < Dimensions; y++)
+                for (int x = 0; x < Dimensions; x++)
+                    VectorB[y] = Operator.Add(VectorB[y], Operator.Multiply(MatrixA[x, y], VectorX[x]));
         }
 
-        public void ReduceLeftBottomTriangleFullPivot(T[] vector, int[] columnOrder)
-        {
-            for (var selected = 0; selected < Rows - 1; selected++)
-            {
-                var max = FindMax(selected);
-
-                var tempOrd = columnOrder[selected];
-                columnOrder[selected] = columnOrder[max.Item2];
-                columnOrder[max.Item2] = tempOrd;
-                SwapColumn(selected, max.Item2);
-
-                var temp = vector[selected];
-                vector[selected] = vector[max.Item1];
-                vector[max.Item1] = temp;
-                SwapRow(selected, max.Item1);
-
-                for (var current = selected + 1; current < Rows; current++)
-                {
-                    ReduceRow(vector, selected, current);
-                }
-            }
-        }
-
-        private void EnsureNoLeadingZero(int selected)
-        {
-            if (this[selected, selected] == (dynamic)new T())
-                throw new ArgumentException("Matrix diagonal contains zero! (leading zero detected)");
-        }
-
-        private void ReduceRow(T[] vector, int selected, int current)
-        {
-            if (this[current, selected] == (dynamic)new T())
-                return;
-
-            var scalar = this[current, selected] / (dynamic)this[selected, selected];
-
-            for (var col = 0; col < Cols; col++)
-            {
-                this[current, col] -= this[selected, col] * scalar;
-            }
-
-            vector[current] -= vector[selected] * scalar;
-        }
-
-        public void CountResultBackwards(T[] v)
-        {
-            for (var i = v.Length - 1; i >= 0; i--)
-            {
-                dynamic sum = new T();
-
-                for (int j = i + 1; j < v.Length; j++)
-                {
-                    sum += (dynamic)MatrixContainer[i, j] * v[j];
-                }
-                v[i] = (v[i] - sum) / MatrixContainer[i, i];
-            }
-        }
-
-        public T[] MultiplyByVector(T[] v)
-        {
-            var result = new T[v.Length];
-            for (int i = 0; i < Rows; i++)
-            {
-                dynamic sum = new T();
-                for (int j = 0; j < Cols; j++)
-                {
-                    sum += (dynamic)this[i, j] * v[j];
-                }
-                result[i] = sum;
-            }
-
-            return result;
-        }
+        public void SetMatrixA(int x, int y, T value) { MatrixA[x, y] = value; }
+        public void SetVectorB(int y, T value) { VectorB[y] = value; }
+        public void SetVectorX(int y, T value) { VectorX[y] = value; }
     }
 }
