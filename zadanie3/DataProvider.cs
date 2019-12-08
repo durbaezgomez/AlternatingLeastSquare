@@ -9,16 +9,17 @@ namespace zadanie3
     public class DataProvider
     {
         public List<Product> ProductsFound = new List<Product>();
-        private readonly Dictionary<string, int> customerIds = new Dictionary<string, int>();
+        public List<Result> ResultsList = new List<Result>();
+        
+            private readonly Dictionary<string, int> customerIds = new Dictionary<string, int>();
         private int nextInt = 0;
 
         public DataProvider(int amountToFind)
         {
-            ProductsFound = ParseInitialData(amountToFind);
+            ResultsList = ParseInitialData(amountToFind);
         }
 
-        // Parsing data from amazon-meta.txt into an array of Product
-        public List<Product> ParseInitialData(int amountToFind)
+        public List<Result> ParseInitialData(int amountToFind)
         {
             List<List<string>> results = ReadFromFile(amountToFind);
             results = FilterForUnique(results);
@@ -31,12 +32,21 @@ namespace zadanie3
                 id += 1;
             }
 
+            foreach (var product in ProductsFound)
+            {
+                foreach (var customerIndex in product.Reviews.Keys)
+                {
+                    var result = new Result(customerIndex, product.Id, product.Reviews[customerIndex]);
+                    ResultsList.Add(result);
+                }
+            }
+
             //foreach (Product prod in ProductsFound)
             //{
             //    Console.Write(prod);
             //}
 
-            return ProductsFound;
+            return ResultsList;
             
         }
 
