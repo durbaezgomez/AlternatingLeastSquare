@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -48,27 +49,34 @@ namespace zadanie3
             List<List<string>> results = new List<List<string>>();
             List<string> current = null;
             string line;
-
             try
             {
-                string pathToFile = "/Users/admin/Desktop/STUDIA/UG/SEM5/ALG/zadanie3/amazon-meta.txt";
-                StreamReader file = File.OpenText(pathToFile);
+                string pathToFile = "zadanie3.amazon-meta.txt";
+                //string pathToFile = "..\\AlternatingLeastSquare\\zadanie3\\amazon-meta.txt";//windows-styled path
+                //string pathToFile = "//AlternatingLeastSquare//zadanie3//amazon-meta.txt"; //unix-styled path
 
-                while ((line = file.ReadLine()) != null && results.Count != amountToFind)
+                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(pathToFile))
                 {
-                    if (line.Contains("ASIN:") && current == null)
-                        current = new List<string>();
-                    else if (line.Length == 0 && current != null)
+                    using (var file = new StreamReader(stream))
                     {
-                        if (CheckViability(current))
-                            results.Add(current);
-                        current = null;
+                        while ((line = file.ReadLine()) != null && results.Count != amountToFind)
+                        {
+                            if (line.Contains("ASIN:") && current == null)
+                                current = new List<string>();
+                            else if (line.Length == 0 && current != null)
+                            {
+                                if (CheckViability(current))
+                                    results.Add(current);
+                                current = null;
+                            }
+
+                            if (current != null)
+                                current.Add(line);
+                        }
                     }
-                    if (current != null)
-                        current.Add(line);
+
                 }
             }
-
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);

@@ -46,6 +46,7 @@ namespace zadanie3
                     ratingsMatrix[result.UserId, result.ProductId] = 0;
                     throw new Exception("Rating not found, inserting 0...");
                 }
+
             }
 
             return ratingsMatrix;
