@@ -8,24 +8,16 @@ namespace zadanie3
     {
         private readonly DataProvider dataProvider = new DataProvider(amountToFind: 7); // TODO 3 rozmiary list do przeliczenia
         public int[,] RatingsMatrix { get; set; }
+        public float[,] MatrixU { get; set; }
+        public float[,] MatrixP { get; set; }
 
         public MatrixProvider()
         {
             RatingsMatrix = ProvideRatingsTable(dataProvider.ResultsList);
-            PrintRatingsMatrix();
-        }
-
-        private void PrintRatingsMatrix()
-        {
-            for (int i = 0; i < RatingsMatrix.GetLength(0); i++)
-            {
-                for (int j = 0; j < RatingsMatrix.GetLength(1); j++)
-                {
-                    Console.Write(RatingsMatrix[i, j] + "   ");
-                }
-
-                Console.WriteLine();
-            }
+            MatrixP = PopulateMatrix(3, 10);
+            MatrixU = PopulateMatrix(3, 3);
+            Utility<float>.PrintMatrix(MatrixP);
+            Utility<float>.PrintMatrix(MatrixU);
         }
 
         private int[,] ProvideRatingsTable(List<Result> pivotTable)
@@ -50,6 +42,21 @@ namespace zadanie3
             }
 
             return ratingsMatrix;
+        }
+
+        private float[,] PopulateMatrix(int d, int xDimension)
+        {
+            float[,] array = new float[d, xDimension];
+            Random rnd = new Random();
+            for (int i = 0; i < d; i++)
+            {
+                for (int j = 0; j < xDimension; j++)
+                {
+                    array[i, j] = (float)rnd.NextDouble();
+                }
+            }
+
+            return array;
         }
 
     }
