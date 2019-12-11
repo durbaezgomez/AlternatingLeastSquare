@@ -36,9 +36,9 @@ namespace zadanie3
             for (int i = 0; i < d; i++)
             {
                 var j = 0;
-                foreach ( var index in listOfIndexes )
+                foreach (var index in listOfIndexes)
                 {
-                    arrayIndexValues[d,j++]  = array[d, index];
+                    arrayIndexValues[d, j++] = array[d, index];
                 }
             }
             return arrayIndexValues;
@@ -53,7 +53,7 @@ namespace zadanie3
                 for (int j = 0; j < size; i++)
                 {
                     if (i == j) eye[i, j] = 1;
-                    else eye[i, j] = 0; 
+                    else eye[i, j] = 0;
                 }
             }
             return eye;
@@ -78,7 +78,7 @@ namespace zadanie3
         kolumnę 7 z macierzy P pomnożoną przez 4 (ocena)
         */
 
-        private float[] Count_V_u_(List<int> listOfIndexes, float[,] arrayIndexValues, int[,] RatingsMatrix, int u) 
+        private float[] Count_V_u_(List<int> listOfIndexes, float[,] arrayIndexValues, int[,] RatingsMatrix, int u)
         {
             var V_u = new float[listOfIndexes.Count];
             var j = 0;
@@ -90,11 +90,11 @@ namespace zadanie3
 
             var i = 0;
             j = 0;
-            for ( ; j < listOfIndexes.Count; j++)
+            for (; j < listOfIndexes.Count; j++)
             {
                 foreach (var index in listOfIndexes) // oceny : 4, 5, 4
                 {
-                    V_u[j] += arrayIndexValues[ i++, j ] * RatingsMatrix[u, index];
+                    V_u[j] += arrayIndexValues[i++, j] * RatingsMatrix[u, index];
                 }
                 i = 0;
             }
@@ -102,6 +102,22 @@ namespace zadanie3
             return V_u;
 
             //czyli chcemy uzyskac w tym przypadku macierz 1x3 np [ 1, 2, 3]
+        }
+
+        private float[,] SwitchGaussColumn(int u, float[,] matrixU, float[] GaussResult)
+        {
+
+            var ArrayAfterSwitch = new float[matrixU.GetLength(0), matrixU.GetLength(1)];
+
+            for( var i = 0; i < matrixU.GetLength(0); i++)
+            {
+                for ( var j = 0; j < matrixU.GetLength(1); j++)
+                {
+                    if (i == u) ArrayAfterSwitch[i, j] = GaussResult[i];
+                    else ArrayAfterSwitch[i, j] = matrixU[i, j];
+                }
+            }
+            return ArrayAfterSwitch;
         }
 
         //To teraz mnożymy rating przez P_i, dodajemy i wychodzi nam:
