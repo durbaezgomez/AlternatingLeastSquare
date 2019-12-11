@@ -14,11 +14,11 @@ namespace zadanie3
         {
         }
 
-        private List<int> FlatNoZero(int u, float[,] array) //  In [38]:    arg: ilosc uzytkownikow, array z ocenami. Zwraca array z indeksami != 0 dla wiersza = u. 
+        private List<int> FlatNoZero(int u, int[,] array) //  In [38]:    arg: ilosc uzytkownikow, array z ocenami. Zwraca array z indeksami != 0 dla wiersza = u. 
         {
             var listOfIndexes = new List<int>();
             // ma przeszukac wiersz u i znalezc            
-            for (int j = 0; j < array.GetLength(u); j++) // skopiowany z Utility, nie rozumiem tego: j < array.GetLength(1)
+            for (int j = 0; j < array.GetLength(1); j++) // skopiowany z Utility, nie rozumiem tego: j < array.GetLength(1)
             {
                 if (array[u, j] != 0)
                     listOfIndexes.Add(j);
@@ -26,42 +26,49 @@ namespace zadanie3
             return listOfIndexes;
         }// sprawdza ktore indeksy sa rozne od 0
 
-        private List<float> TakeIndexValues(List<int> listOfIndexes, float[,] array)
-        {  //In [39]
+        private float[,] TakeIndexValues(List<int> listOfIndexes, float[,] array, int d)
+        {
+
             // czyli kolumny z macierzy P o indeksach w _I_u_)
-            var arrayIndexValues = new List<float>();
+            var arrayIndexValues = new float[d, listOfIndexes.Count];
             // np listOfIndexes to [4,6,7] to wynikiem ma byc dwuwymiarowa tablica wartosci o indexach [ [ [0,4],[0,6],[0,7] ] , [ [1,4], [1,6], [1,7] ] , ... , [ [n,4], [n,6], [n,7] ] ],
             //a wartosci pod tymi indeksami wziete z array, a array to lista random_product
-            for (int i = 0; i < array.GetLength(0); i++)
+            for (int i = 0; i < d; i++)
             {
-                for (int j = 0; j < array.GetLength(1); j++)
+                var j = 0;
+                foreach ( var index in listOfIndexes )
                 {
-                    Console.Write(array[i, j] + "   ");
+                    arrayIndexValues[d,j++]  = array[d, index];
                 }
-
-                Console.WriteLine();
             }
-
             return arrayIndexValues;
 
         }
 
-        private int[,] createEye(int size) // stworz macierz jednostowa o zadanym rozmiarze
+        private int[,] CreateEye(int size) // stworz macierz jednostowa o zadanym rozmiarze
         {
-            var Eye = new int[,] { };
+            var eye = new int[,] { };
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; i++)
                 {
-                    //(i == j) ? Eye[i, j] = 1 : Eye[i, j] = 0; // cos nie dziala
+                    if (i == j) eye[i, j] = 1;
+                    else eye[i, j] = 0; 
                 }
             }
-            return Eye;
+            return eye;
             // return macierz_jednostkowa
         }
 
+
+
+
+        //TO DO
         //A_u = np.matmul(P_I_u, P_I_u_T) + reg* E 
         // do tego w sumie potrzebna metoda transponowania, a reszte w sumie mamy. mozna to eventualnie zamknac w metode dokonujaca tego mnozenia kilku elementow.
+
+
+
 
 
         /*Następnie liczymy _V_u_, czyli musimy dodać do siebie:
@@ -71,13 +78,27 @@ namespace zadanie3
         kolumnę 7 z macierzy P pomnożoną przez 4 (ocena)
         */
 
-        private float[,] count_V_u_(int[,] arrayOfIndexes, float[,] MatrixP)
+        private float[] Count_V_u_(List<int> listOfIndexes, float[,] arrayIndexValues, int[,] RatingsMatrix, int u) 
         {
-            var V_u = new float[,] { };
-            for (int i = 0; i < arrayOfIndexes.GetLength(0); i++)
-            {
+            var V_u = new float[listOfIndexes.Count];
+            var j = 0;
 
+            foreach (var index in listOfIndexes)
+            {
+                V_u[j++] = 0;
             }
+
+            var i = 0;
+            j = 0;
+            for ( ; j < listOfIndexes.Count; j++)
+            {
+                foreach (var index in listOfIndexes) // oceny : 4, 5, 4
+                {
+                    V_u[j] += arrayIndexValues[ i++, j ] * RatingsMatrix[u, index];
+                }
+                i = 0;
+            }
+
             return V_u;
 
             //czyli chcemy uzyskac w tym przypadku macierz 1x3 np [ 1, 2, 3]
