@@ -4,36 +4,37 @@ namespace zadanie3
 {
     public class Matrix<T>
     {
+        //TODO: Przeorganizuj klasę tak, żeby konstruktor przyjmował odpowiednie arraye dla obliczeń dla POTRZEBNYCH konfiguracji - macierz-macierz i macierz-wektor. NIE KOMBINUJ!
         public T[,] MatrixA;
+        public T[,] MatrixB;
         public T[] VectorB;
-        public T[] VectorX;
         public T[] VectorXGauss;
         public int Dimensions;
         public int[] Column;
 
-        public Matrix(int dimensions)
+        public Matrix(T[,] matrixA, T[,] matrixB)
         {
+
             Dimensions = dimensions;
-            MatrixA = new T[dimensions, dimensions];
-            VectorX = new T[dimensions];
-            VectorB = new T[dimensions];
             VectorXGauss = new T[dimensions];
-            Column = new int[dimensions];
+            Column = new int[];
             for (int i = 0; i < dimensions; i++)
             {
                 Column[i] = i;
             }
         }
 
-        public void CalculatePG()
+        public void CalculatePG(T[,] matrix, T[] vector)
         {
-            for (int n = 1; n < Dimensions; n++)
+
+
+            for (int n = 1; n < matrix.GetLength(0); n++)
             {
                 int number = n - 1;
-                T max = MatrixA[Column[n - 1], n - 1];
-                for (int i = n - 1; i < Dimensions; i++)
+                T max = matrix[Column[n - 1], n - 1];
+                for (int i = n - 1; i < matrix.GetLength(0); i++)
                 {
-                    T actual = Absolute(MatrixA[Column[n - 1], i]);
+                    T actual = Absolute(matrix[Column[n - 1], i]);
                     if (Operator.GreaterThan<T>(actual, max))
                     {
                         max = actual;
@@ -42,45 +43,43 @@ namespace zadanie3
                 }
                 if (Operator.NotEqual(number, n - 1))
                 {
-                    for (int l = n - 1; l < Dimensions; l++)
+                    for (int l = n - 1; l < matrix.GetLength(0); l++)
                     {
-                        T tempA = MatrixA[Column[l], number];
-                        MatrixA[Column[l], number] = MatrixA[Column[l], n - 1];
-                        MatrixA[Column[l], n - 1] = tempA;
+                        T tempM = matrix[Column[l], number];
+                        matrix[Column[l], number] = matrix[Column[l], n - 1];
+                        matrix[Column[l], n - 1] = tempM;
                     }
-                    T tempB = VectorB[number];
-                    VectorB[number] = VectorB[n - 1];
-                    VectorB[n - 1] = tempB;
+                    T tempV = vector[number];
+                    vector[number] = vector[n - 1];
+                    vector[n - 1] = tempV;
                 }
-                CalculateStep(n);
+                CalculateStep(n, matrix, vector);
             }
-            CalculateResult();
+            CalculateResult(matrix, vector);
         }
 
-        public void CalculateStep(int n)
+        public void CalculateStep(int n, T[,] matrix, T[] vector)
         {
-            for (int y = n; y < Dimensions; y++)
+            for (int y = n; y < matrix.GetLength(0); y++)
             {
-                T a = Operator.Divide(MatrixA[Column[n - 1], y], MatrixA[Column[n - 1], n - 1]);
+                T a = Operator.Divide(matrix[Column[n - 1], y], matrix[Column[n - 1], n - 1]);
                 for (int x = n - 1; x < Dimensions; x++)
-                    MatrixA[Column[x], y] = Operator.Subtract(MatrixA[Column[x], y], Operator.Multiply(a, MatrixA[Column[x], n - 1]));
-                VectorB[y] = Operator.Subtract(VectorB[y], Operator.Multiply(a, VectorB[n - 1]));
+                    matrix[Column[x], y] = Operator.Subtract(matrix[Column[x], y], Operator.Multiply(a, matrix[Column[x], n - 1]));
+                vector[y] = Operator.Subtract(vector[y], Operator.Multiply(a, vector[n - 1]));
             }
         }
 
-        public void CalculateResult()
+        public void CalculateResult(T[,] matrix, T[] vector)
         {
             for (int y = Dimensions - 1; y >= 0; y--)
             {
-                VectorXGauss[Column[y]] = Operator.Divide(VectorB[y], MatrixA[Column[y], y]);
+                VectorXGauss[Column[y]] = Operator.Divide(vector[y], matrix[Column[y], y]);
                 for (int x = Dimensions - 1; x > y; x--)
                 {
-                    MatrixA[Column[x], y] = Operator.Divide(MatrixA[Column[x], y], MatrixA[Column[y], y]);
-                    VectorXGauss[Column[y]] = Operator.Subtract(VectorXGauss[Column[y]], Operator.Multiply(MatrixA[Column[x], y], VectorXGauss[Column[x]]));
+                    matrix[Column[x], y] = Operator.Divide(matrix[Column[x], y], matrix[Column[y], y]);
+                    VectorXGauss[Column[y]] = Operator.Subtract(VectorXGauss[Column[y]], Operator.Multiply(matrix[Column[x], y], VectorXGauss[Column[x]]));
                 }
             }
-            for (int i = 0; i < Dimensions; i++)
-                VectorB[i] = VectorXGauss[i];
         }
 
         public T Absolute(T obj)
@@ -91,22 +90,13 @@ namespace zadanie3
             return obj;
         }
 
-        public T CalculateDiff()
-        {
-            T sum = Operator.Subtract(VectorX[0], VectorX[0]);
-            for (int y = 0; y < Dimensions; y++)
-            {
-                T diff = Absolute(Operator.Subtract(VectorX[y], VectorB[y]));
-                sum = Operator.Add(sum, diff);
-            }
-            return sum;
-        }
 
-        public void Multiplication()
+        public T[] Multiplication(T[,] matrix, T[] vector)
         {
             for (int y = 0; y < Dimensions; y++)
                 for (int x = 0; x < Dimensions; x++)
-                    VectorB[y] = Operator.Add(VectorB[y], Operator.Multiply(MatrixA[x, y], VectorX[x]));
+                    vector[y] = Operator.Add(vector[y], Operator.Multiply(matrix[x, y], vector[x]));
+            return vector;
         }
 
         public void SetMatrixA(int x, int y, T value) { MatrixA[x, y] = value; }
