@@ -14,7 +14,7 @@ namespace zadanie3
         {
         }
 
-        private List<int> FlatNoZero(int u, int[,] array) //  In [38]:    arg: ilosc uzytkownikow, array z ocenami. Zwraca array z indeksami != 0 dla wiersza = u. 
+        public List<int> FlatNoZeroOnRow(int u, int[,] array) //  In [38]:    arg: ilosc uzytkownikow, array z ocenami. Zwraca array z indeksami != 0 dla wiersza = u. 
         {
             var listOfIndexes = new List<int>();
             // ma przeszukac wiersz u i znalezc            
@@ -26,7 +26,20 @@ namespace zadanie3
             return listOfIndexes;
         }// sprawdza ktore indeksy sa rozne od 0
 
-        private float[,] TakeIndexValues(List<int> listOfIndexes, float[,] array, int d)
+        public List<int> FlatNoZeroOnColumn(int p, int[,] array) //  In [38]:    arg: ilosc uzytkownikow, array z ocenami. Zwraca array z indeksami != 0 dla wiersza = u. 
+        {
+            var listOfIndexes = new List<int>();
+            // ma przeszukac wiersz u i znalezc            
+            for (int j = 0; j < array.GetLength(0); j++) // skopiowany z Utility, nie rozumiem tego: j < array.GetLength(1)
+            {
+                if (array[j, p] != 0)
+                    listOfIndexes.Add(j);
+            }
+            return listOfIndexes;
+        }// sprawdza ktore indeksy sa rozne od 0
+
+
+        public float[,] TakeIndexValues(List<int> listOfIndexes, float[,] array, int d)
         {
 
             // czyli kolumny z macierzy P o indeksach w _I_u_)
@@ -38,14 +51,17 @@ namespace zadanie3
                 var j = 0;
                 foreach (var index in listOfIndexes)
                 {
-                    arrayIndexValues[d, j++] = array[d, index];
+                    arrayIndexValues[i, j++] = array[i, index];
                 }
             }
             return arrayIndexValues;
 
         }
 
-        private int[,] CreateEye(int size) // stworz macierz jednostowa o zadanym rozmiarze
+
+       
+
+        public int[,] CreateEye(int size) // stworz macierz jednostowa o zadanym rozmiarze
         {
             var eye = new int[,] { };
             for (int i = 0; i < size; i++)
@@ -61,14 +77,9 @@ namespace zadanie3
         }
 
 
-
-
         //TO DO
         //A_u = np.matmul(P_I_u, P_I_u_T) + reg* E 
         // do tego w sumie potrzebna metoda transponowania, a reszte w sumie mamy. mozna to eventualnie zamknac w metode dokonujaca tego mnozenia kilku elementow.
-
-
-
 
 
         /*Następnie liczymy _V_u_, czyli musimy dodać do siebie:
@@ -77,8 +88,38 @@ namespace zadanie3
         kolumnę 6 z macierzy P pomnożoną przez 5 (ocena)
         kolumnę 7 z macierzy P pomnożoną przez 4 (ocena)
         */
+        public float[,] createCloneArray(float[,] matrix)
+        {
+            var newArray = new float[matrix.GetLength(0), matrix.GetLength(1)];
 
-        private float[] Count_V_u_(List<int> listOfIndexes, float[,] arrayIndexValues, int[,] RatingsMatrix, int u)
+            for( var i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (var j = 0; j < matrix.GetLength(1); j++)
+                {
+                    newArray[i, j] = matrix[i, j];
+                }
+
+            }
+            return newArray;
+        }
+
+        public float count_difference(float [,] original, float [,] changed)
+        {
+            float diff = 0;
+
+            for (var i = 0; i < original.GetLength(0); i++)
+            {
+                for (var j = 0; j < original.GetLength(1); j++)
+                {
+                    diff += Math.Abs(original[i, j] - changed[i, j]);
+                }
+
+            }
+
+            return diff / (original.GetLength(0) * original.GetLength(1) );
+        }
+
+        public float[] Count_V_u(List<int> listOfIndexes, float[,] arrayIndexValues, int[,] RatingsMatrix, int u)
         {
             var V_u = new float[listOfIndexes.Count];
             var j = 0;
@@ -104,33 +145,47 @@ namespace zadanie3
             //czyli chcemy uzyskac w tym przypadku macierz 1x3 np [ 1, 2, 3]
         }
 
-        private float[,] SwitchGaussColumn(int u, float[,] matrixU, float[] GaussResult)
+        public float[] Count_W_p(List<int> listOfIndexes, float[,] arrayIndexValues, int[,] RatingsMatrix, int p)
+        {
+            var W_p = new float[listOfIndexes.Count];
+            var k = 0;
+
+            foreach (var index in listOfIndexes)
+            {
+                W_p[k++] = 0;
+            }
+
+            var i = 0;
+            for (var j = 0; j < listOfIndexes.Count; j++)
+            {
+                foreach (var index in listOfIndexes) // oceny : 4, 5, 4
+                {
+                    W_p[j] += arrayIndexValues[i++, j] * RatingsMatrix[index, p];
+                }
+                i = 0;
+            }
+
+            return W_p;
+
+            //czyli chcemy uzyskac w tym przypadku macierz 1x3 np [ 1, 2, 3]
+        }
+
+        public float[,] SwitchGaussColumn(int u, float[,] matrix, float[] GaussResult)
         {
 
-            var ArrayAfterSwitch = new float[matrixU.GetLength(0), matrixU.GetLength(1)];
+            var ArrayAfterSwitch = new float[matrix.GetLength(0), matrix.GetLength(1)];
 
-            for( var i = 0; i < matrixU.GetLength(0); i++)
+            for( var i = 0; i < matrix.GetLength(0); i++)
             {
-                for ( var j = 0; j < matrixU.GetLength(1); j++)
+                for ( var j = 0; j < matrix.GetLength(1); j++)
                 {
                     if (i == u) ArrayAfterSwitch[i, j] = GaussResult[i];
-                    else ArrayAfterSwitch[i, j] = matrixU[i, j];
+                    else ArrayAfterSwitch[i, j] = matrix[i, j];
                 }
             }
             return ArrayAfterSwitch;
         }
-
-        //To teraz mnożymy rating przez P_i, dodajemy i wychodzi nam:
-
-        //In[44]:
-        //V_u = np.zeros(d).T
-        //for i in I_u:
-        //    V_u += ratings_matrix[u][i] * P[:, i] 
-
-        //V_u
-
-
-
+ 
 
     }
 
