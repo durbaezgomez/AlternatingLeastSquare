@@ -7,6 +7,8 @@
             var alsObject = new ALS();
             var matrixProvider = new MatrixProvider();
 
+            Utility<int>.PrintMatrix(matrixProvider.RatingsMatrix);
+
             var matrixU = matrixProvider.MatrixU;
             var matrixP = matrixProvider.MatrixP;
 
@@ -18,16 +20,17 @@
             var d = 3;
             var reg = 0.1; //lambda
 
-            for ( var i = 0; i < 100; i++) // dla 100 powtorzen kroku 3, 4, 5, 6
+            for (var i = 0; i < 100; i++) // dla 100 powtorzen kroku 3, 4, 5, 6
             {
-                
-                for( int u = 0; u < ratings.GetLength(0); u++) { // dla kazdego uzytkownika
+
+                for (int u = 0; u < ratings.GetLength(0); u++)
+                { // dla kazdego uzytkownika
 
                     var I_u = alsObject.FlatNoZeroOnRow(u, ratings);
 
                     var P_I_u = alsObject.TakeIndexValues(I_u, matrixP_clone, d);
-                    // var P_I_u_T = transponowanie
-
+                    var toUse = 
+                    //var P_I_u_T = toUse.
                     var E_p = alsObject.CreateEye(d);
 
                     // var A_u = mnozenie macierzy * reg

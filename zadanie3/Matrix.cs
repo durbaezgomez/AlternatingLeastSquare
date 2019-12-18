@@ -145,6 +145,26 @@ namespace zadanie3
             return result;
         }
 
+        public T[,] Summing(T[,] matrixA, T[,] matrixB)
+        {
+            T[,] result = new T[matrixA.GetLength(0), matrixA.GetLength(1)];
+            if (matrixA.GetLength(0) != matrixB.GetLength(0) || matrixA.GetLength(1) != matrixB.GetLength(1))
+            {
+                throw new Exception("Matrices have incorrect dimensions");
+            }
+
+            for (var i = 0; i < matrixA.GetLength(0); i++)
+            {
+                for (var j = 0; j < matrixA.GetLength(1); j++)
+                {
+                    result[i, j] = Operator.Add(matrixA[i, j], matrixB[i, j]);
+                }
+
+            }
+            return result;
+
+        }
+
         public static T[] GetColumnFromMatrix(int index, T[,] matrix)
         {
             T[] column = new T[matrix.GetLength(0)];
