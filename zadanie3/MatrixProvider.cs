@@ -7,9 +7,9 @@ namespace zadanie3
     public class MatrixProvider
     {
         private readonly DataProvider dataProvider = new DataProvider(amountToFind: 7); // TODO 3 rozmiary list do przeliczenia
-        public int[,] RatingsMatrix { get; set; }
-        public float[,] MatrixU { get; set; }
-        public float[,] MatrixP { get; set; }
+        public int[,] RatingsMatrix { get; set; } // out [33]
+        public float[,] MatrixU { get; set; } // out [36]
+        public float[,] MatrixP { get; set; } // out [35]
 
         public MatrixProvider()
         {
