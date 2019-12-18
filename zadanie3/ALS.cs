@@ -39,12 +39,13 @@ namespace zadanie3
         public float[,] TakeIndexValues(List<int> listOfIndexes, float[,] array, float dimension)
         {
             var arrayIndexValues = new float[(int)dimension, listOfIndexes.Count];     
-            for (int i = 0, j = 0; i < dimension; i++, j++)
+            for (int i = 0, j = 0; i < dimension; i++)
             {
                 foreach (var index in listOfIndexes)
                 {
-                    arrayIndexValues[i, j] = array[i, index];
+                    arrayIndexValues[i, j++] = array[i, index];
                 }
+                j = 0;
             }
             return arrayIndexValues;
         }
@@ -52,10 +53,10 @@ namespace zadanie3
 
         public float[,] CreateEye(float size)
         {
-            var eye = new float[,] { };
+            var eye = new float[(int)size, (int)size];
             for (int i = 0; i < size; i++)
             {
-                for (int j = 0; j < size; i++)
+                for (int j = 0; j < size; j++)
                 {
                     eye[i, j] = (i == j) ? 1 : 0;
                 }

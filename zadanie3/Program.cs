@@ -7,44 +7,56 @@
             var alsObject = new ALS();
             var matrixProvider = new MatrixProvider();
 
-            Utility<int>.PrintMatrix(matrixProvider.RatingsMatrix);
-
             var matrixU = matrixProvider.MatrixU;
             var matrixP = matrixProvider.MatrixP;
 
             var matrixU_clone = matrixU.Clone() as float[,];
             var matrixP_clone = matrixP.Clone() as float[,];
 
-            var ratings = matrixProvider.RatingsMatrix;
+            var ratings = new int[,] { { 0, 0, 0, 0, 4, 0, 5, 4, 0, 0 },
+                                    { 4, 0, 4, 0, 0, 4, 0, 0, 0, 4 },
+                                    { 5, 4, 5, 5, 0, 5, 5, 5, 5, 5 },
+                                    { 0, 5, 5, 0, 5, 0, 0, 5, 0, 5 },
+                                    { 0, 5, 5, 0, 5, 0, 0, 5, 0, 5 } };
 
             float dimension = 3;
             float reg = 0.1F; 
 
-            for (var i = 0; i < 100; i++) 
+            for (var i = 0; i < 1; i++) 
             {
 
-                for (int userIndex = 0; userIndex < ratings.GetLength(0); userIndex++)
+                for (int userIndex = 0; userIndex < 1; userIndex++)
                 { 
 
                     var I_u = alsObject.FlatNoZeroOnRow(userIndex, ratings);
+                    Utility<int>.PrintFlatList(I_u);
+
 
                     var P_I_u = alsObject.TakeIndexValues(I_u, matrixP_clone, dimension);
-                    var P_I_u_T = Matrix<float>.Transpose(P_I_u);
-                   
-                    var E_p = alsObject.CreateEye(dimension);
+                    Utility<float>.PrintMatrix(P_I_u);
 
-                    var A_u = Matrix<float>.Summing(Matrix<float>.Multiplication(P_I_u, P_I_u_T), Matrix<float>.Multiplication(E_p, reg)); 
+                    var P_I_u_T = Matrix<float>.Transpose(P_I_u);
+                    Utility<float>.PrintMatrix(P_I_u_T);
+
+                    var E_p = alsObject.CreateEye(dimension);
+                    Utility<float>.PrintMatrix(E_p);
+
+                    var A_u = Matrix<float>.Summing(Matrix<float>.Multiplication(P_I_u, P_I_u_T), Matrix<float>.Multiplication(E_p, reg));
+                    Utility<float>.PrintMatrix(A_u);
 
                     var V_u = alsObject.Count_V_u(I_u, P_I_u, ratings, userIndex);
+                    Utility<float>.PrintFlatArray(V_u);
 
                     var usingMatrix = new Matrix<float>(A_u, V_u);
                     usingMatrix.CalculatePG(A_u, V_u);
                     var solutionOnU = usingMatrix.VectorXGauss;
+                    Utility<float>.PrintFlatArray(solutionOnU);
 
                     matrixU_clone = alsObject.SwitchGaussColumn(userIndex, matrixU, solutionOnU);
+                    Utility<float>.PrintMatrix(matrixU_clone);
                 }
 
-                for (var productIndex = 0; productIndex < ratings.GetLength(1); productIndex++) 
+                for (var productIndex = 0; productIndex < 1; productIndex++) 
                 {
                     var I_p = alsObject.FlatNoZeroOnColumn(productIndex, ratings);
                     var U_I_p = alsObject.TakeIndexValues(I_p, matrixU_clone, dimension);
@@ -63,6 +75,8 @@
                 }
 
             }
+            Utility<float>.PrintMatrix(matrixU_clone);
+            Utility<float>.PrintMatrix(matrixP_clone);
 
         }
     }
