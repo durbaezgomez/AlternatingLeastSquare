@@ -119,6 +119,14 @@ namespace zadanie3
             return vector;
         }
 
+        public static T[,] Multiplication(T[,] matrix, T liczba)
+        {
+            for (var y = 0; y < matrix.GetLength(0); y++)
+                for (var x = 0; x < matrix.GetLength(0); x++)
+                    matrix[y, x] = Operator.Multiply(matrix[y,x], liczba);
+            return matrix;
+        }
+
         public static T[,] Multiplication(T[,] matrixA, T[,] matrixB)
         {
             if (matrixA.GetLength(1) != matrixB.GetLength(10))
@@ -145,7 +153,7 @@ namespace zadanie3
             return result;
         }
 
-        public T[,] Summing(T[,] matrixA, T[,] matrixB)
+        public static T[,] Summing(T[,] matrixA, T[,] matrixB)
         {
             T[,] result = new T[matrixA.GetLength(0), matrixA.GetLength(1)];
             if (matrixA.GetLength(0) != matrixB.GetLength(0) || matrixA.GetLength(1) != matrixB.GetLength(1))
