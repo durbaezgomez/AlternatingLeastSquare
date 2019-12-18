@@ -125,9 +125,9 @@ namespace zadanie3
         public float[,] SwitchGaussColumn(int u, float[,] matrix, float[] GaussResult)
         {
             var ArrayAfterSwitch = new float[matrix.GetLength(0), matrix.GetLength(1)];
-            for( var i = 0; i < matrix.GetLength(0); i++)
+            for(var i = 0; i < matrix.GetLength(0); i++)
             {
-                for ( var j = 0; j < matrix.GetLength(1); j++)
+                for (var j = 0; j < matrix.GetLength(1); j++)
                 {
                     if (i == u) ArrayAfterSwitch[i, j] = GaussResult[i];
                     else ArrayAfterSwitch[i, j] = matrix[i, j];
