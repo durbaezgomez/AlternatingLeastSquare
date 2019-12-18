@@ -12,13 +12,13 @@
             var matrixU = matrixProvider.MatrixU;
             var matrixP = matrixProvider.MatrixP;
 
-            var matrixU_clone = alsObject.createCloneArray(matrixU);
-            var matrixP_clone = alsObject.createCloneArray(matrixP);
+            var matrixU_clone = matrixU.Clone() as float[,];
+            var matrixP_clone = matrixP.Clone() as float[,];
 
             var ratings = matrixProvider.RatingsMatrix;
 
             float d = 3;
-            var reg = 0.1; //lambda
+            float reg = 0.1F; //lambda
 
             for (var i = 0; i < 100; i++) // dla 100 powtorzen kroku 3, 4, 5, 6
             {
@@ -33,7 +33,7 @@
                    
                     var E_p = alsObject.CreateEye(d);
 
-                    var A_u = Matrix<float>.Summing(Matrix<float>.Multiplication(P_I_u, P_I_u_T), Matrix<float>.Multiplication(E_p, d)); 
+                    var A_u = Matrix<float>.Summing(Matrix<float>.Multiplication(P_I_u, P_I_u_T), Matrix<float>.Multiplication(E_p, reg)); 
 
                     var V_u = alsObject.Count_V_u(I_u, P_I_u, ratings, u);
 
@@ -51,7 +51,7 @@
                      var U_I_p_T = Matrix<float>.Transpose(U_I_p);
                     var E_u = alsObject.CreateEye(d);
 
-                    var B_u = Matrix<float>.Summing(Matrix<float>.Multiplication(U_I_p, U_I_p_T), Matrix<float>.Multiplication(E_u, d));
+                    var B_u = Matrix<float>.Summing(Matrix<float>.Multiplication(U_I_p, U_I_p_T), Matrix<float>.Multiplication(E_u, reg));
 
                     var W_p = alsObject.Count_W_p(I_p, U_I_p, ratings, p);
 
