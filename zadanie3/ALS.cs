@@ -63,21 +63,6 @@ namespace zadanie3
             return eye;
         }
 
-        public float count_difference(float [,] original, float [,] changed)
-        {
-            float count_difference = 0;
-
-            for (var i = 0; i < original.GetLength(0); i++)
-            {
-                for (var j = 0; j < original.GetLength(1); j++)
-                {
-                    count_difference += Math.Abs(original[i, j] - changed[i, j]);
-                }
-
-            }
-
-            return count_difference / (original.GetLength(0) * original.GetLength(1) );
-        }
 
         public float[] Count_V_u(List<int> listOfIndexes, float[,] arrayIndexValues, int[,] RatingsMatrix, int userIndex)
         {
@@ -124,15 +109,15 @@ namespace zadanie3
 
         public float[,] SwitchGaussColumn(int userIndex, float[,] matrix, float[] GaussResult)
         {
-            var ArrayAfterSwitch = new float[matrix.GetLength(0), matrix.GetLength(1)];
+            var arrayAfterSwitch = new float[matrix.GetLength(0), matrix.GetLength(1)];
             for(var i = 0; i < matrix.GetLength(0); i++)
             {
                 for (var j = 0; j < matrix.GetLength(1); j++)
                 {
-                    ArrayAfterSwitch[i, j] = (i == userIndex) ? GaussResult[i] : matrix[i, j];                   
+                    arrayAfterSwitch[i, j] = (i == userIndex) ? GaussResult[i] : matrix[i, j];                   
                 }
             }
-            return ArrayAfterSwitch;
+            return arrayAfterSwitch;
         }
  
 

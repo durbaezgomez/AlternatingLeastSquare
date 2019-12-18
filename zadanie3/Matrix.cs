@@ -1,20 +1,19 @@
 ﻿using MiscUtil;
 using System;
-using System.Collections.Generic;
 
 namespace zadanie3
 {
-    public class Matrix<T>
+    public class Matrix
     {
-        public T[,] MatrixA;
-        public T[,] MatrixB;
-        public T[] VectorA;
-        public T[] VectorB;
-        public T[] VectorXGauss;
+        public float[,] MatrixA;
+        public float[,] MatrixB;
+        public float[] VectorA;
+        public float[] VectorB;
+        public float[] VectorXGauss;
         public int[] ColumnA;
         public int[] ColumnB;
 
-        public Matrix(T[,] matrixA, T[,] matrixB)
+        public Matrix(float[,] matrixA, float[,] matrixB)
         {
             MatrixA = matrixA;
             MatrixB = matrixB;
@@ -32,7 +31,7 @@ namespace zadanie3
             }
         }
 
-        public Matrix(T[,] matrixA, T[] vectorA)
+        public Matrix(float[,] matrixA, float[] vectorA)
         {
             MatrixA = matrixA;
             VectorA = vectorA;
@@ -45,36 +44,38 @@ namespace zadanie3
 
         }
 
-        public void CalculatePG(T[,] MatrixA, T[] VectorA)
+        public void CalculatePG(float[,] MatrixA, float[] VectorA)
         {
-
             for (int n = 1; n < MatrixA.GetLength(0); n++)
             {
                 int number = n - 1;
-                T max = MatrixA[ColumnA[n - 1], n - 1];
+                float max = MatrixA[ColumnA[n - 1], n - 1];
                 for (int i = n - 1; i < MatrixA.GetLength(0); i++)
                 {
-                    T actual = Absolute(MatrixA[ColumnA[n - 1], i]);
-                    if (Operator.GreaterThan<T>(actual, max))
+                    float actual = Absolute(MatrixA[ColumnA[n - 1], i]);
+                    if (Operator.GreaterThan(actual, max))
                     {
                         max = actual;
                         number = i;
                     }
                 }
+
                 if (Operator.NotEqual(number, n - 1))
                 {
                     for (int l = n - 1; l < MatrixA.GetLength(0); l++)
                     {
-                        T tempM = MatrixA[ColumnA[l], number];
+                        float tempM = MatrixA[ColumnA[l], number];
                         MatrixA[ColumnA[l], number] = MatrixA[ColumnA[l], n - 1];
                         MatrixA[ColumnA[l], n - 1] = tempM;
                     }
-                    T tempV = VectorA[number];
+                    float tempV = VectorA[number];
                     VectorA[number] = VectorA[n - 1];
                     VectorA[n - 1] = tempV;
                 }
+
                 CalculateStep(n);
             }
+
             CalculateResult(MatrixA.GetLength(0));
         }
 
@@ -82,7 +83,7 @@ namespace zadanie3
         {
             for (int y = n; y < MatrixA.GetLength(0); y++)
             {
-                T a = Operator.Divide(MatrixA[ColumnA[n - 1], y], MatrixA[ColumnA[n - 1], n - 1]);
+                float a = Operator.Divide(MatrixA[ColumnA[n - 1], y], MatrixA[ColumnA[n - 1], n - 1]);
                 for (int x = n - 1; x < MatrixA.GetLength(0); x++)
                     MatrixA[ColumnA[x], y] = Operator.Subtract(MatrixA[ColumnA[x], y], Operator.Multiply(a, MatrixA[ColumnA[x], n - 1]));
                 VectorA[y] = Operator.Subtract(VectorA[y], Operator.Multiply(a, VectorA[n - 1]));
@@ -102,16 +103,8 @@ namespace zadanie3
             }
         }
 
-        public T Absolute(T obj)
-        {
-            T zero = Operator.Subtract(obj, obj);
-            if (Operator.LessThan(obj, zero))
-                obj = Operator.Subtract(obj, Operator.Add(obj, obj));
-            return obj;
-        }
 
-
-        public static T[] Multiplication(T[,] matrix, T[] vector)
+        public static float[] Multiplication(float[,] matrix, float[] vector)
         {
             for (var y = 0; y < matrix.GetLength(0); y++)
                 for (var x = 0; x < matrix.GetLength(0); x++)
@@ -119,43 +112,38 @@ namespace zadanie3
             return vector;
         }
 
-        public static T[,] Multiplication(T[,] matrix, T liczba)
+        public static float[,] Multiplication(float[,] matrix, float arg)
         {
             for (var y = 0; y < matrix.GetLength(0); y++)
                 for (var x = 0; x < matrix.GetLength(0); x++)
-                    matrix[y, x] = Operator.Multiply(matrix[y,x], liczba);
+                    matrix[y, x] = Operator.Multiply(matrix[y,x], arg);
             return matrix;
         }
 
-        public static T[,] Multiplication(T[,] matrixA, T[,] matrixB)
+        public static float[,] Multiplication(float[,] matrixA, float[,] matrixB)
         {
-            if (matrixA.GetLength(1) != matrixB.GetLength(10))
+            if (matrixA.GetLength(0) != matrixB.GetLength(1))
                 throw new Exception("Matrices have incorrect dimensions");
 
-            T[,] result = new T[matrixA.GetLength(0), matrixB.GetLength(1)];
-            List<T[]> columns = new List<T[]>();
-            for (var i = 0; i < result.GetLength(1); i++)
-            {
-                var vectorB = GetColumnFromMatrix(i, matrixB);
-                var resultColumn = Multiplication(matrixA, vectorB);
-                columns.Add(resultColumn);
-            }
+            float[,] result = new float[matrixA.GetLength(0), matrixB.GetLength(0)];
 
-            var columnCounter = 0;
-            foreach (var column in columns)
+            for (int m = 0; m < result.GetLength(0); m++)
             {
-                for (var i = 0; i < column.Length; i++)
+                for (int n = 0; n < result.GetLength(1); n++)
                 {
-                    result[i, columnCounter] = column[i];
+                    for (int j = 0; j < matrixA.GetLength(1); j++)
+                    {
+                        result[m, n] += matrixA[m, j] * matrixB[j, n];
+                    }
                 }
             }
 
             return result;
         }
 
-        public static T[,] Summing(T[,] matrixA, T[,] matrixB)
+        public static float[,] Summing(float[,] matrixA, float[,] matrixB)
         {
-            T[,] result = new T[matrixA.GetLength(0), matrixA.GetLength(1)];
+            float[,] result = new float[matrixA.GetLength(0), matrixA.GetLength(1)];
             if (matrixA.GetLength(0) != matrixB.GetLength(0) || matrixA.GetLength(1) != matrixB.GetLength(1))
             {
                 throw new Exception("Matrices have incorrect dimensions");
@@ -173,23 +161,31 @@ namespace zadanie3
 
         }
 
-        public static T[] GetColumnFromMatrix(int index, T[,] matrix)
+        public float CountDifference(float[,] original, float[,] changed)
         {
-            T[] column = new T[matrix.GetLength(0)];
-            for (var i = 0; i < matrix.GetLength(0); i++)
+            float difference = 0;
+            var counter = 0;
+            for (var i = 0; i < original.GetLength(0); i++)
             {
-                column[i] = matrix[i, index];
+                for (var j = 0; j < original.GetLength(1); j++)
+                {
+                    if (original[i, j] != 0)
+                    {
+                        difference += Math.Abs((original[i, j] - changed[i, j]));
+                        counter++;
+                    }
+                }
             }
 
-            return column;
+            return difference / counter;
         }
 
-        public static T[,] Transpose(T[,] matrix)
+        public static float[,] Transpose(float[,] matrix)
         {
             var rows = matrix.GetLength(0);
             var columns = matrix.GetLength(1);
 
-            var result = new T[columns, rows];
+            var result = new float[columns, rows];
 
             for (var c = 0; c < columns; c++)
             {
@@ -202,10 +198,19 @@ namespace zadanie3
             return result;
         }
 
-        public void SetMatrixA(int x, int y, T value) { MatrixA[x, y] = value; }
-        public void SetMatrixB(int x, int y, T value) { MatrixB[x, y] = value; }
+        public float Absolute(float obj)
+        {
+            float zero = Operator.Subtract(obj, obj);
+            if (Operator.LessThan(obj, zero))
+                obj = Operator.Subtract(obj, Operator.Add(obj, obj));
+            return obj;
+        }
 
-        public void SetVectorA(int y, T value) { VectorA[y] = value; }
-        public void SetVectorB(int y, T value) { VectorB[y] = value; }
+        public void SetMatrixA(int x, int y, float value) { MatrixA[x, y] = value; }
+        public void SetMatrixB(int x, int y, float value) { MatrixB[x, y] = value; }
+
+        public void SetVectorA(int y, float value) { VectorA[y] = value; }
+        public void SetVectorB(int y, float value) { VectorB[y] = value; }
     }
+        
 }
