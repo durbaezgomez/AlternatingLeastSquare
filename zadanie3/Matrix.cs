@@ -1,19 +1,16 @@
-﻿using System;
+﻿using MiscUtil;
+using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
-using MiscUtil;
 
 namespace zadanie3
 {
     public class Matrix<T>
     {
-        //TODO: Przeorganizuj klasę tak, żeby konstruktor przyjmował odpowiednie arraye dla obliczeń dla POTRZEBNYCH konfiguracji - macierz-macierz i macierz-wektor. NIE KOMBINUJ!
         public T[,] MatrixA;
         public T[,] MatrixB;
         public T[] VectorA;
         public T[] VectorB;
         public T[] VectorXGauss;
-        public int Dimensions;
         public int[] ColumnA;
         public int[] ColumnB;
 
@@ -78,7 +75,7 @@ namespace zadanie3
                 }
                 CalculateStep(n);
             }
-            CalculateResult();
+            CalculateResult(MatrixA.GetLength(0));
         }
 
         public void CalculateStep(int n)
@@ -86,18 +83,18 @@ namespace zadanie3
             for (int y = n; y < MatrixA.GetLength(0); y++)
             {
                 T a = Operator.Divide(MatrixA[ColumnA[n - 1], y], MatrixA[ColumnA[n - 1], n - 1]);
-                for (int x = n - 1; x < Dimensions; x++)
+                for (int x = n - 1; x < MatrixA.GetLength(0); x++)
                     MatrixA[ColumnA[x], y] = Operator.Subtract(MatrixA[ColumnA[x], y], Operator.Multiply(a, MatrixA[ColumnA[x], n - 1]));
                 VectorA[y] = Operator.Subtract(VectorA[y], Operator.Multiply(a, VectorA[n - 1]));
             }
         }
 
-        public void CalculateResult()
+        public void CalculateResult(int dim)
         {
-            for (int y = Dimensions - 1; y >= 0; y--)
+            for (int y = dim - 1; y >= 0; y--)
             {
                 VectorXGauss[ColumnA[y]] = Operator.Divide(VectorA[y], MatrixA[ColumnA[y], y]);
-                for (int x = Dimensions - 1; x > y; x--)
+                for (int x = dim - 1; x > y; x--)
                 {
                     MatrixA[ColumnA[x], y] = Operator.Divide(MatrixA[ColumnA[x], y], MatrixA[ColumnA[y], y]);
                     VectorXGauss[ColumnA[y]] = Operator.Subtract(VectorXGauss[ColumnA[y]], Operator.Multiply(MatrixA[ColumnA[x], y], VectorXGauss[ColumnA[x]]));
@@ -114,15 +111,15 @@ namespace zadanie3
         }
 
 
-        public T[] Multiplication(T[,] matrix, T[] vector)
+        public static T[] Multiplication(T[,] matrix, T[] vector)
         {
-            for (var y = 0; y < Dimensions; y++)
-                for (var x = 0; x < Dimensions; x++)
+            for (var y = 0; y < matrix.GetLength(0); y++)
+                for (var x = 0; x < matrix.GetLength(0); x++)
                     vector[y] = Operator.Add(vector[y], Operator.Multiply(matrix[x, y], vector[x]));
             return vector;
         }
 
-        public T[,] Multiplication(T[,] matrixA, T[,] matrixB)
+        public static T[,] Multiplication(T[,] matrixA, T[,] matrixB)
         {
             if (matrixA.GetLength(1) != matrixB.GetLength(10))
                 throw new Exception("Matrices have incorrect dimensions");
@@ -148,7 +145,7 @@ namespace zadanie3
             return result;
         }
 
-        public T[] GetColumnFromMatrix(int index, T[,] matrix)
+        public static T[] GetColumnFromMatrix(int index, T[,] matrix)
         {
             T[] column = new T[matrix.GetLength(0)];
             for (var i = 0; i < matrix.GetLength(0); i++)
@@ -159,7 +156,23 @@ namespace zadanie3
             return column;
         }
 
+        public static T[,] Transpose(T[,] matrix)
+        {
+            var rows = matrix.GetLength(0);
+            var columns = matrix.GetLength(1);
 
+            var result = new T[columns, rows];
+
+            for (var c = 0; c < columns; c++)
+            {
+                for (var r = 0; r < rows; r++)
+                {
+                    result[c, r] = matrix[r, c];
+                }
+            }
+
+            return result;
+        }
 
         public void SetMatrixA(int x, int y, T value) { MatrixA[x, y] = value; }
         public void SetMatrixB(int x, int y, T value) { MatrixB[x, y] = value; }
