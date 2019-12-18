@@ -39,11 +39,11 @@ namespace zadanie3
         }// sprawdza ktore indeksy sa rozne od 0
 
 
-        public float[,] TakeIndexValues(List<int> listOfIndexes, float[,] array, int d)
+        public float[,] TakeIndexValues(List<int> listOfIndexes, float[,] array, float d)
         {
 
             // czyli kolumny z macierzy P o indeksach w _I_u_)
-            var arrayIndexValues = new float[d, listOfIndexes.Count];
+            var arrayIndexValues = new float[(int)d, listOfIndexes.Count];
             // np listOfIndexes to [4,6,7] to wynikiem ma byc dwuwymiarowa tablica wartosci o indexach [ [ [0,4],[0,6],[0,7] ] , [ [1,4], [1,6], [1,7] ] , ... , [ [n,4], [n,6], [n,7] ] ],
             //a wartosci pod tymi indeksami wziete z array, a array to lista random_product
             for (int i = 0; i < d; i++)
@@ -61,9 +61,9 @@ namespace zadanie3
 
        
 
-        public int[,] CreateEye(int size) // stworz macierz jednostowa o zadanym rozmiarze
+        public float[,] CreateEye(float size) // stworz macierz jednostowa o zadanym rozmiarze
         {
-            var eye = new int[,] { };
+            var eye = new float[,] { };
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; i++)
