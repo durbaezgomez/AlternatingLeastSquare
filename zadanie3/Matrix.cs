@@ -92,6 +92,7 @@ namespace zadanie3
 
         public void CalculateResult(int dim)
         {
+            VectorXGauss = new float[ColumnA.Length];
             for (int y = dim - 1; y >= 0; y--)
             {
                 VectorXGauss[ColumnA[y]] = Operator.Divide(VectorA[y], MatrixA[ColumnA[y], y]);
