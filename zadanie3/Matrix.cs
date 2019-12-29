@@ -92,6 +92,7 @@ namespace zadanie3
 
         public void CalculateResult(int dim)
         {
+            VectorXGauss = new float[ColumnA.Length];
             for (int y = dim - 1; y >= 0; y--)
             {
                 VectorXGauss[ColumnA[y]] = Operator.Divide(VectorA[y], MatrixA[ColumnA[y], y]);
@@ -122,10 +123,10 @@ namespace zadanie3
 
         public static float[,] Multiplication(float[,] matrixA, float[,] matrixB)
         {
-            if (matrixA.GetLength(0) != matrixB.GetLength(1))
+            if (matrixA.GetLength(1) != matrixB.GetLength(0))
                 throw new Exception("Matrices have incorrect dimensions");
 
-            float[,] result = new float[matrixA.GetLength(0), matrixB.GetLength(0)];
+            float[,] result = new float[matrixA.GetLength(0), matrixB.GetLength(1)];
 
             for (int m = 0; m < result.GetLength(0); m++)
             {

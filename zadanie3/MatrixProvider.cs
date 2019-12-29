@@ -29,7 +29,7 @@ namespace zadanie3
             RatingsMatrix = ConvertResultsTableToPivot(dataProvider.ResultsList);
 
             MatrixP = PopulateMatrix(3, 10);
-            MatrixU = PopulateMatrix(3, 3);
+            MatrixU = PopulateMatrix(3, 5);
 
             Utility<float>.PrintMatrix(MatrixP);
             Utility<float>.PrintMatrix(MatrixU);

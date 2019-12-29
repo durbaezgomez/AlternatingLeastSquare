@@ -67,16 +67,15 @@ namespace zadanie3
 
         public float[] Count_V_u(List<int> listOfIndexes, float[,] arrayIndexValues, int[,] RatingsMatrix, int userIndex)
         {
-            var V_u = new float[listOfIndexes.Count];
-            int j = 0;
+            var dim = arrayIndexValues.GetLength(1);
 
-            foreach (var index in listOfIndexes)
-            {
-                V_u[j++] = 0;
+            var V_u = new float[dim];
+
+            for( int i = 0; i< dim; i++ ) { 
+                V_u[i] = 0;
             }
-            j = 0;
 
-            for (int i = 0; j < listOfIndexes.Count; j++)
+            for (int i = 0, j = 0; j < dim; j++)
             {
                 foreach (var index in listOfIndexes)
                 {
@@ -89,17 +88,18 @@ namespace zadanie3
 
         public float[] Count_W_p(List<int> listOfIndexes, float[,] arrayIndexValues, int[,] RatingsMatrix, int productIndex)
         {
-            var W_p = new float[listOfIndexes.Count];
-            var k = 0;
+            var dim = arrayIndexValues.GetLength(1);
+            var W_p = new float[dim];
 
-            foreach (var index in listOfIndexes)
+            for (int i = 0; i < dim; i++)
             {
-                W_p[k++] = 0;
+                W_p[i] = 0;
             }
 
-            for (int j = 0, i = 0; j < listOfIndexes.Count; j++)
+
+            for (int j = 0, i = 0; j < dim; j++)
             {
-                foreach (var index in listOfIndexes)
+                foreach (int index in listOfIndexes)
                 {
                     W_p[j] += arrayIndexValues[i++, j] * RatingsMatrix[index, productIndex];
                 }
@@ -111,11 +111,11 @@ namespace zadanie3
         public float[,] SwitchGaussColumn(int userIndex, float[,] matrix, float[] GaussResult)
         {
             var arrayAfterSwitch = new float[matrix.GetLength(0), matrix.GetLength(1)];
-            for(var i = 0; i < matrix.GetLength(0); i++)
+            for(int i = 0, index = 0; i < matrix.GetLength(0); i++)
             {
                 for (var j = 0; j < matrix.GetLength(1); j++)
                 {
-                    arrayAfterSwitch[i, j] = (i == userIndex) ? GaussResult[i] : matrix[i, j];                   
+                    arrayAfterSwitch[i, j] = (j == userIndex) ? GaussResult[index++] : matrix[i, j];                   
                 }
             }
             return arrayAfterSwitch;
