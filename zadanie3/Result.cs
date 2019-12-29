@@ -2,11 +2,11 @@
 {
     public class Result
     {
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public int ProductId { get; set; }
         public int Rating { get; set; }
 
-        public Result(int userId, int productId, int rating)
+        public Result(string userId, int productId, int rating)
         {
             UserId = userId;
             ProductId = productId;
