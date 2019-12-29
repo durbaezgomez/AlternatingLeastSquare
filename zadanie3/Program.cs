@@ -8,7 +8,10 @@ namespace zadanie3
         static void Main(string[] args)
         {
             var alsObject = new ALS();
-            var matrixProvider = new MatrixProvider();
+            int prodAmount = 10;
+            int userAmount = prodAmount;
+
+            var matrixProvider = new MatrixProvider(prodAmount, userAmount);
 
             var matrixU = matrixProvider.MatrixU;
             var matrixP = matrixProvider.MatrixP;
@@ -68,6 +71,7 @@ namespace zadanie3
                     Utility<int>.PrintFlatList(I_p);
 
                     var U_I_p = alsObject.TakeIndexValues(I_p, matrixU_clone, dimension);
+
                     Utility<float>.PrintMatrix(U_I_p);
 
                     var U_I_p_T = Matrix.Transpose(U_I_p);
@@ -79,11 +83,14 @@ namespace zadanie3
                     var B_u = Matrix.Summing(Matrix.Multiplication(U_I_p, U_I_p_T), Matrix.Multiplication(E_u, reg));
                     Utility<float>.PrintMatrix(B_u);
 
+
                     var W_p = alsObject.Count_W_p(I_p, U_I_p_T, ratings, productIndex);
                     Utility<float>.PrintFlatArray(W_p);
 
                     var usingMatrix = new Matrix(B_u, W_p);
 
+                    var usingMatrix = new Matrix(B_u, W_p);
+                  
                     usingMatrix.CalculatePG(B_u, W_p);
                     var solutionOnP = usingMatrix.VectorXGauss;
 

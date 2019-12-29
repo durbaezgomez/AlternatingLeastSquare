@@ -1,47 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace zadanie3
 {
     public class MatrixProvider
     {
-        private readonly DataProvider dataProvider = new DataProvider(amountToFind: 7); // TODO 3 rozmiary list do przeliczenia
-        public int[,] RatingsMatrix { get; set; } // out [33]
-        public float[,] MatrixU { get; set; } // out [36]
-        public float[,] MatrixP { get; set; } // out [35]
+        private Parser dataProvider { get; }
 
-        public MatrixProvider()
+        private readonly Dictionary<string, int> _customerIds = new Dictionary<string, int>(); // holds original string IDs and converted ones
+        private readonly Dictionary<int, int> _productIds = new Dictionary<int, int>(); // holds original string IDs and converted ones
+        private int nextInt = 0;
+        private int nextProdInt = 0;
+
+        private int ProdAmount { get; set; }
+        private int UserAmount { get; set; }
+
+        public int[,] RatingsMatrix { get; set; }
+        public float[,] MatrixU { get; set; }
+        public float[,] MatrixP { get; set; }
+
+        public MatrixProvider(int prodAmount, int userAmount)
         {
-            RatingsMatrix = ProvideRatingsTable(dataProvider.ResultsList);
+            ProdAmount = prodAmount;
+            UserAmount = userAmount;
+
+            dataProvider = new Parser(ProdAmount, UserAmount);
+
+            RatingsMatrix = ConvertResultsTableToPivot(dataProvider.ResultsList);
+
             MatrixP = PopulateMatrix(3, 10);
             MatrixU = PopulateMatrix(3, 5);
+
             Utility<float>.PrintMatrix(MatrixP);
             Utility<float>.PrintMatrix(MatrixU);
         }
 
-        private int[,] ProvideRatingsTable(List<Result> pivotTable)
+        private int GetCustomerId(string idToCheck)
         {
-            var rows = pivotTable.Max(x => x.UserId) + 1;
-            var cols = pivotTable.Max(x => x.ProductId) + 1;
-            int[,] ratingsMatrix = new int[rows, cols];
 
-            foreach (var result in pivotTable)
+            if (_customerIds.TryAdd(idToCheck, nextInt))
+                nextInt += 1;
+
+            return _customerIds[idToCheck];
+        }
+
+        private int GetProductId(int idToCheck)
+        {
+            if(_productIds.TryAdd(idToCheck, nextProdInt))
+                nextProdInt += 1;
+
+            return _productIds[idToCheck];
+        }
+
+        private int[,] ConvertResultsTableToPivot(List<Result> resultsList)
+        {
+            int[,] pivotTable = new int[UserAmount, ProdAmount];
+
+            foreach (var result in resultsList)
             {
-                try
-                {
-                    ratingsMatrix[result.UserId, result.ProductId] = result.Rating;
-                }
-
-                catch
-                {
-                    ratingsMatrix[result.UserId, result.ProductId] = 0;
-                    throw new Exception("Rating not found, inserting 0...");
-                }
-
+                pivotTable[GetCustomerId(result.UserId), GetProductId(result.ProductId)] = result.Rating;
             }
 
-            return ratingsMatrix;
+            return pivotTable;
+        }
+
+        private void PrintRatingsMatrix()
+        {
+            for (int i = 0; i < RatingsMatrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < RatingsMatrix.GetLength(1); j++)
+                {
+                    Console.Write(RatingsMatrix[i, j] + "  ");
+                }
+                Console.WriteLine();
+            }
         }
 
         private float[,] PopulateMatrix(int d, int xDimension)
