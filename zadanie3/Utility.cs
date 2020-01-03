@@ -22,6 +22,19 @@ namespace zadanie3
             Console.WriteLine("End of Print");
         }
 
+        public static void PrintMatrixComparison(int[,] array_org, float[,] array_mod)
+        {
+            for (int i = 0; i < array_org.GetLength(0); i++)
+            {
+                for (int j = 0; j < array_org.GetLength(1); j++)
+                {
+                    Console.Write(array_org[i, j] + " | " + String.Format("{0:.00}", array_mod[i, j]) + "   " );
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine("End of Print");
+        }
+
         public static void PrintFlatArray(T[] array)
         {
             for (int i = 0; i < array.GetLength(0); i++)

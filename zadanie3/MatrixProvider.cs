@@ -16,8 +16,28 @@ namespace zadanie3
         private int UserAmount { get; set; }
 
         public int[,] RatingsMatrix { get; set; }
-        public float[,] MatrixU { get; set; }
-        public float[,] MatrixP { get; set; }
+        //public float[,] MatrixU { get; }
+    
+        //public float[,] MatrixP { get; set; }
+
+        public void setRatingsMatrixWithAmounts( int prodAmount, int userAmount)
+        {
+            ProdAmount = prodAmount;
+            UserAmount = userAmount;
+            RatingsMatrix = ConvertResultsTableToPivot(dataProvider.ResultsList);
+        }
+
+        public float[,] CreateMatrixU (int dim_0, int dim_1)
+        {
+            var MatrixU = PopulateMatrix(dim_0, dim_1);
+            return MatrixU;
+        }
+
+        public float[,] CreateMatrixP(int dim_0, int dim_1)
+        {
+            var MatrixP = PopulateMatrix(dim_0, dim_1);
+            return MatrixP;
+        }
 
         public MatrixProvider(int prodAmount, int userAmount)
         {
@@ -26,13 +46,15 @@ namespace zadanie3
 
             dataProvider = new Parser(ProdAmount, UserAmount);
 
+
             RatingsMatrix = ConvertResultsTableToPivot(dataProvider.ResultsList);
 
-            MatrixP = PopulateMatrix(3, 10);
-            MatrixU = PopulateMatrix(3, 5);
+            //MatrixP = PopulateMatrix(3, 10);
+            //MatrixU = PopulateMatrix(3, 10);
+            //PrintRatingsMatrix();
 
-            Utility<float>.PrintMatrix(MatrixP);
-            Utility<float>.PrintMatrix(MatrixU);
+            //Utility<float>.PrintMatrix(MatrixP);
+            //Utility<float>.PrintMatrix(MatrixU);
         }
 
         private int GetCustomerId(string idToCheck)
