@@ -104,7 +104,9 @@ namespace zadanie3
 
 
                 }
-            }         
+            }
+
+            matrixProvider.cleanDictionaries();
 
         }
     }

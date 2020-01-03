@@ -7,8 +7,8 @@ namespace zadanie3
     {
         private Parser dataProvider { get; }
 
-        private readonly Dictionary<string, int> _customerIds = new Dictionary<string, int>(); // holds original string IDs and converted ones
-        private readonly Dictionary<int, int> _productIds = new Dictionary<int, int>(); // holds original string IDs and converted ones
+        private Dictionary<string, int> _customerIds = new Dictionary<string, int>(); // holds original string IDs and converted ones
+        private Dictionary<int, int> _productIds = new Dictionary<int, int>(); // holds original string IDs and converted ones
         private int nextInt = 0;
         private int nextProdInt = 0;
 
@@ -25,6 +25,12 @@ namespace zadanie3
             var ResultsList = dataProvider.GetCroppedData(prodAmount, userAmount);
             var newResultsArray = ConvertResultsTableToPivot(ResultsList);
             return newResultsArray;
+        }
+
+        public void cleanDictionaries()
+        {
+            _customerIds = new Dictionary<string, int>();
+            _productIds = new Dictionary<int, int>();
         }
 
         //public void setRatingsMatrixWithAmounts( int prodAmount, int userAmount)
