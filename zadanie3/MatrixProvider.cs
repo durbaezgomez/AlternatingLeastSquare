@@ -31,6 +31,8 @@ namespace zadanie3
         {
             _customerIds = new Dictionary<string, int>();
             _productIds = new Dictionary<int, int>();
+            nextInt = 0;
+            nextProdInt = 0;
         }
 
         //public void setRatingsMatrixWithAmounts( int prodAmount, int userAmount)
