@@ -5,86 +5,85 @@ namespace zadanie3
 {
     public class MatrixProvider
     {
-        private Parser dataProvider { get; }
+        private Parser DataProvider { get; }
 
         private Dictionary<string, int> _customerIds = new Dictionary<string, int>(); // holds original string IDs and converted ones
         private Dictionary<int, int> _productIds = new Dictionary<int, int>(); // holds original string IDs and converted ones
-        private int nextInt = 0;
-        private int nextProdInt = 0;
+        private int _nextInt = 0;
+        private int _nextProdInt = 0;
 
         private int ProdAmount { get; set; }
         private int UserAmount { get; set; }
 
         public int[,] RatingsMatrix { get; set; }
 
-
-        public int[,] GetCroppedDataFromDataProvider(int prodAmount, int userAmount)
-        {
-            ProdAmount = prodAmount;
-            UserAmount = userAmount;
-            var ResultsList = dataProvider.GetCroppedData(prodAmount, userAmount);
-            var newResultsArray = ConvertResultsTableToPivot(ResultsList);
-            return newResultsArray;
-        }
-
-        public void cleanDictionaries()
-        {
-            _customerIds = new Dictionary<string, int>();
-            _productIds = new Dictionary<int, int>();
-            nextInt = 0;
-            nextProdInt = 0;
-        }
-
-        //public void setRatingsMatrixWithAmounts( int prodAmount, int userAmount)
-        //{
-        //    ProdAmount = prodAmount;
-        //    UserAmount = userAmount;
-        //    RatingsMatrix = ConvertResultsTableToPivot(dataProvider.ResultsList);
-        //}
-
-        public float[,] CreateMatrixU (int dim_0, int dim_1)
-        {
-            var MatrixU = PopulateMatrix(dim_0, dim_1);
-            return MatrixU;
-        }
-
-        public float[,] CreateMatrixP(int dim_0, int dim_1)
-        {
-            var MatrixP = PopulateMatrix(dim_0, dim_1);
-            return MatrixP;
-        }
-
         public MatrixProvider(int prodAmount, int userAmount)
         {
             ProdAmount = prodAmount;
             UserAmount = userAmount;
 
-            dataProvider = new Parser(ProdAmount, UserAmount);
+            DataProvider = new Parser(ProdAmount, UserAmount);
 
-            RatingsMatrix = ConvertResultsTableToPivot(dataProvider.ResultsList);
+            RatingsMatrix = ConvertResultsTableToPivot(DataProvider.ResultsList);
 
+        }
+
+        public int[,] GetCroppedDataFromDataProvider(int prodAmount, int userAmount)
+        {
+            ProdAmount = prodAmount;
+            UserAmount = userAmount;
+            var resultsList = DataProvider.GetCroppedData(prodAmount, userAmount);
+            var newResultsArray = ConvertResultsTableToPivot(resultsList);
+            return newResultsArray;
+        }
+
+        private double[,] PopulateMatrix(int d, int xDimension)
+        {
+            var array = new double[d, xDimension];
+            var rnd = new Random();
+            for (var i = 0; i < d; i++)
+            {
+                for (var j = 0; j < xDimension; j++)
+                {
+                    array[i, j] = (double)rnd.NextDouble();
+                }
+            }
+
+            return array;
+        }
+
+        public double[,] CreateMatrixU(int dim0, int dim1)
+        {
+            var matrixU = PopulateMatrix(dim0, dim1);
+            return matrixU;
+        }
+
+        public double[,] CreateMatrixP(int dim0, int dim1)
+        {
+            var matrixP = PopulateMatrix(dim0, dim1);
+            return matrixP;
         }
 
         private int GetCustomerId(string idToCheck)
         {
 
-            if (_customerIds.TryAdd(idToCheck, nextInt))
-                nextInt += 1;
+            if (_customerIds.TryAdd(idToCheck, _nextInt))
+                _nextInt += 1;
 
             return _customerIds[idToCheck];
         }
 
         private int GetProductId(int idToCheck)
         {
-            if(_productIds.TryAdd(idToCheck, nextProdInt))
-                nextProdInt += 1;
+            if (_productIds.TryAdd(idToCheck, _nextProdInt))
+                _nextProdInt += 1;
 
             return _productIds[idToCheck];
         }
 
         private int[,] ConvertResultsTableToPivot(List<Result> resultsList)
         {
-            int[,] pivotTable = new int[UserAmount, ProdAmount];
+            var pivotTable = new int[UserAmount, ProdAmount];
 
             foreach (var result in resultsList)
             {
@@ -96,9 +95,9 @@ namespace zadanie3
 
         private void PrintRatingsMatrix()
         {
-            for (int i = 0; i < RatingsMatrix.GetLength(0); i++)
+            for (var i = 0; i < RatingsMatrix.GetLength(0); i++)
             {
-                for (int j = 0; j < RatingsMatrix.GetLength(1); j++)
+                for (var j = 0; j < RatingsMatrix.GetLength(1); j++)
                 {
                     Console.Write(RatingsMatrix[i, j] + "  ");
                 }
@@ -106,19 +105,12 @@ namespace zadanie3
             }
         }
 
-        private float[,] PopulateMatrix(int d, int xDimension)
+        public void CleanDictionaries()
         {
-            float[,] array = new float[d, xDimension];
-            Random rnd = new Random();
-            for (int i = 0; i < d; i++)
-            {
-                for (int j = 0; j < xDimension; j++)
-                {
-                    array[i, j] = (float)rnd.NextDouble();
-                }
-            }
-
-            return array;
+            _customerIds = new Dictionary<string, int>();
+            _productIds = new Dictionary<int, int>();
+            _nextInt = 0;
+            _nextProdInt = 0;
         }
 
     }

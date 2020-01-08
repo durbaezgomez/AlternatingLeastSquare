@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
 
 namespace zadanie3
 {
@@ -32,8 +32,8 @@ namespace zadanie3
         {
             var parsingTime = Watch.Elapsed;
             ReadFromFile();
-            Console.WriteLine("PARSED The FILE IN " + (Watch.Elapsed - parsingTime));
-            Console.WriteLine("ERROR RATIO: " + ResultsList.Count() / ((float)ProdAmount * UserAmount));
+            //Console.WriteLine("PARSED The FILE IN " + (Watch.Elapsed - parsingTime));
+            //Console.WriteLine("ERROR RATIO: " + ResultsList.Count() / ((double)ProdAmount * UserAmount));
 
             return ResultsList;
         }
@@ -48,12 +48,12 @@ namespace zadanie3
             int rating;
             int productId = 0;
 
-            TimeSpan parsingTime = Watch.Elapsed;
-            TimeSpan prodTime = Watch.Elapsed;
+            var parsingTime = Watch.Elapsed;
+            var prodTime = Watch.Elapsed;
 
             try
             {
-                string pathToFile = "zadanie3.amazon-meta.txt";
+                const string pathToFile = "zadanie3.amazon-meta.txt";
 
                 using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(pathToFile);
                 using var file = new StreamReader(stream);
@@ -78,13 +78,13 @@ namespace zadanie3
                                 ResultsList.Add(result);
                             }
                             productId += 1;
-                            Console.WriteLine("PARSED THE PRODUCT IN " + (Watch.Elapsed - parsingTime));
+                            //Console.WriteLine("PARSED THE PRODUCT IN " + (Watch.Elapsed - parsingTime));
                         }
                         current = null;
                     }
 
                     if (current != null)
-                        current.Add(line); 
+                        current.Add(line);
                 }
             }
             catch (Exception e)
@@ -126,22 +126,6 @@ namespace zadanie3
                 .Select(x => x.UserId)
                 .ToList();
 
-            //var productIds = resultsList
-            //    .Where(x => mostActiveUsers.Contains(x.UserId))
-            //    .GroupBy(x => x.ProductId)
-            //    .Select(group => new
-            //    {
-            //        ProductId = group.Key
-            //    })
-            //    .Take(ProdAmount)
-            //    .Select(x => x.ProductId)
-            //    .ToList();
-
-            //var filteredResults = resultsList
-            //    .Where(x => mostActiveUsers.Contains(x.UserId))
-            //    .Where(x => productIds.Contains(x.ProductId))
-            //    .ToList();
-
             var filteredResults = byProductResults
                 .Where(x => mostActiveUsers.Contains(x.UserId))
                 .ToList();
@@ -155,8 +139,8 @@ namespace zadanie3
         {
             if (product.Contains("  group: Book"))
             {
-                int reviewCount = product.Count - product.FindIndex(x => x.Contains("reviews")) - 1;
-                return reviewCount >= UserAmount/2;
+                var reviewCount = product.Count - product.FindIndex(x => x.Contains("reviews")) - 1;
+                return reviewCount >= UserAmount / 2;
             }
 
             return false;
@@ -164,7 +148,7 @@ namespace zadanie3
 
         private Dictionary<string, int> ProcessReviews(List<string> data)
         {
-            Dictionary<string, int> reviews = new Dictionary<string, int>();
+            var reviews = new Dictionary<string, int>();
 
             var startIndex = data.FindIndex(x => x.Contains("reviews"));
             data.RemoveRange(0, startIndex);
@@ -173,11 +157,11 @@ namespace zadanie3
             int rating;
             foreach (string line in data)
             {
-                Match match = Regex.Match(line, @" A[A-Z0-9]+");
+                var match = Regex.Match(line, @" A[A-Z0-9]+");
                 if (match.Success)
                 {
                     customerId = match.Value.Substring(1);
-                    Match match2 = Regex.Match(line, @"rating: [0-9]");
+                    var match2 = Regex.Match(line, @"rating: [0-9]");
                     if (match2.Success)
                     {
                         rating = int.Parse(match2.Value.Substring(8));

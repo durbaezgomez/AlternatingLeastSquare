@@ -15,7 +15,7 @@ namespace zadanie3
 
         public override string ToString()
         {
-            string s = "\nProduct Id: " + Id + "\nReviews: " + Reviews.Count + "\n";
+            var s = "\nProduct Id: " + Id + "\nReviews: " + Reviews.Count + "\n";
             foreach (KeyValuePair<int, int> entry in Reviews)
             {
                 s += "customer: " + entry.Key + " | ";

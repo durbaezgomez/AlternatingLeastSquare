@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace zadanie3
 {
-    public static class Utility<T>
+    public static class Utility
     {
-        public static void PrintMatrix(T[,] array)
+        public static void PrintMatrix(double[,] array)
         {
-            for (int i = 0; i < array.GetLength(0); i++)
+            for (var i = 0; i < array.GetLength(0); i++)
             {
-                for (int j = 0; j < array.GetLength(1); j++)
+                for (var j = 0; j < array.GetLength(1); j++)
                 {
                     Console.Write(array[i, j] + "   ");
                 }
@@ -22,11 +18,11 @@ namespace zadanie3
             Console.WriteLine("End of Print");
         }
 
-        public static void PrintTime(T[,] array)
+        public static void PrintTime(double[,] array)
         {
-            for (int i = 0; i < array.GetLength(0); i++)
+            for (var i = 0; i < array.GetLength(0); i++)
             {
-                for (int j = 0; j < array.GetLength(1); j++)
+                for (var j = 0; j < array.GetLength(1); j++)
                 {
                     Console.Write(array[i, j] + "   ");
                 }
@@ -35,13 +31,13 @@ namespace zadanie3
             Console.WriteLine("End of Print");
         }
 
-        public static void PrintData(T[,,] array)
+        public static void PrintData(double[,,] array)
         {
-            for (int i = 0; i < array.GetLength(0); i++)
+            for (var i = 0; i < array.GetLength(0); i++)
             {
-                for (int j = 0; j < array.GetLength(1); j++)
+                for (var j = 0; j < array.GetLength(1); j++)
                 {
-                    for (int k = 0; k < array.GetLength(2); k++)
+                    for (var k = 0; k < array.GetLength(2); k++)
                     {
                         Console.Write(array[i, j, k] + "   ");
                     }
@@ -52,58 +48,62 @@ namespace zadanie3
             Console.WriteLine("End of Print");
         }
 
-        public static void PrintMatrixComparison(int[,] array_org, float[,] array_mod)
+        public static void PrintMatrixComparison(int[,] arrayOrg, double[,] arrayMod)
         {
-            for (int i = 0; i < array_org.GetLength(0); i++)
+            for (var i = 0; i < arrayOrg.GetLength(0); i++)
             {
-                for (int j = 0; j < array_org.GetLength(1); j++)
+                for (var j = 0; j < arrayOrg.GetLength(1); j++)
                 {
-                    Console.Write(array_org[i, j] + " | " + String.Format("{0:.00}", array_mod[i, j]) + "   " );
+                    Console.Write(arrayOrg[i, j] + " | " + String.Format("{0:.00}", arrayMod[i, j]) + "   ");
                 }
                 Console.WriteLine();
             }
             Console.WriteLine("End of Print");
         }
 
-        public static void PrintComparisonOnZeros( int[,] array_test, int [,] array_learning, float [,] array_mod, int [,] pairs)
+        public static void PrintComparisonOnZeros(int[,] arrayTest, int[,] arrayLearning, double[,] arrayMod, int[,] pairs)
         {
-            for(int i = 0; i<pairs.GetLength(0); i++)
+            for (var i = 0; i < pairs.GetLength(0); i++)
             {
                 var j = pairs[i, 0];
                 var k = pairs[i, 1];
                 Console.WriteLine("Pair : " + j + " , " + k);
-                Console.WriteLine(array_test[j, k] + " | " + array_learning[j, k] + " | " + array_mod[j, k] + "    ");
+                Console.WriteLine(arrayTest[j, k] + " | " + arrayLearning[j, k] + " | " + arrayMod[j, k] + "    ");
             }
         }
 
-        public static float CountError(int[,] array_test, float[,] array_mod, int[,] pairs)
+        public static (double, double) CountError(int[,] arrayTest, double[,] arrayMod, int[,] pairs)
         {
-            float summing_error = 0;
-            for (int i = 0; i < pairs.GetLength(0); i++)
+            double squareError = 0;
+            double summingError = 0;
+            for (var i = 0; i < pairs.GetLength(0); i++)
             {
                 var j = pairs[i, 0];
                 var k = pairs[i, 1];
-                summing_error += Math.Abs(array_mod[j, k] - array_test[j, k] );
+                summingError += Math.Abs(arrayMod[j, k] - arrayTest[j, k]);
+                squareError += Math.Pow(arrayMod[j, k] - arrayTest[j, k], 2);
             }
-            return summing_error;
+            return (summingError, squareError);
         }
 
-        public static void PrintFlatArray(T[] array)
+
+
+        public static void PrintFlatArray(double[] array)
         {
-            for (int i = 0; i < array.GetLength(0); i++)
-            {             
+            for (var i = 0; i < array.GetLength(0); i++)
+            {
                 Console.Write(array[i] + "   ");
             }
             Console.WriteLine("End of Print");
             Console.WriteLine();
         }
 
-        public static void PrintFlatList(List<T> list)
+        public static void PrintFlatList(List<double> list)
         {
-            T[] new_list = list.ToArray();
-            for (int i = 0; i < new_list.GetLength(0); i++)
+            var newList = list.ToArray();
+            for (var i = 0; i < newList.GetLength(0); i++)
             {
-                Console.Write(new_list[i] + "   ");
+                Console.Write(newList[i] + "   ");
             }
             Console.WriteLine("End of Print");
             Console.WriteLine();
